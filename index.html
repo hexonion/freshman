@@ -8,11 +8,12 @@
         :root {
             --bg-primary: #0a0a0b;
             --bg-secondary: #121214;
-            --bg-card: #18181b;
+            --bg-card: rgba(24, 24, 27, 0.7);
             --text-primary: #f4f4f5;
             --text-secondary: #a1a1aa;
             --text-muted: #71717a;
-            --border-subtle: #27272a;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
             --accent-neon-pink: #ff2d78;
             --accent-electric-blue: #00d4ff;
             --accent-acid-green: #a7f542;
@@ -23,12 +24,15 @@
             --radius-lg: 20px;
             --transition-smooth: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
             --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --cursor-size: 20px;
+            --cursor-dot: 4px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: none !important;
         }
 
         body {
@@ -39,6 +43,138 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            position: relative;
+            user-select: none;
+        }
+
+        /* Шумовой фон */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 200px 200px;
+        }
+
+        /* Градиентные пятна */
+        .bg-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .bg-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            opacity: 0.07;
+            animation: floatBlob 20s ease-in-out infinite;
+        }
+        .bg-blob:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: var(--accent-neon-pink);
+            top: -200px;
+            left: -100px;
+            animation-delay: 0s;
+            animation-duration: 22s;
+        }
+        .bg-blob:nth-child(2) {
+            width: 500px;
+            height: 500px;
+            background: var(--accent-electric-blue);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -7s;
+            animation-duration: 25s;
+        }
+        .bg-blob:nth-child(3) {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-purple);
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+            animation-duration: 18s;
+        }
+        .bg-blob:nth-child(4) {
+            width: 350px;
+            height: 350px;
+            background: var(--accent-acid-green);
+            bottom: 30%;
+            left: 5%;
+            animation-delay: -3s;
+            animation-duration: 28s;
+        }
+
+        @keyframes floatBlob {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(120px, -80px) scale(1.15);
+            }
+            50% {
+                transform: translate(-60px, 100px) scale(0.9);
+            }
+            75% {
+                transform: translate(-130px, -40px) scale(1.1);
+            }
+        }
+
+        /* Кастомный курсор */
+        .cursor-outer {
+            position: fixed;
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+            mix-blend-mode: difference;
+        }
+        .cursor-inner {
+            position: fixed;
+            width: var(--cursor-dot);
+            height: var(--cursor-dot);
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease-out;
+        }
+        .cursor-outer.hover {
+            width: 50px;
+            height: 50px;
+            border-color: var(--accent-neon-pink);
+            background: rgba(255, 45, 120, 0.1);
+            mix-blend-mode: normal;
+        }
+        .cursor-outer.hover-blue {
+            border-color: var(--accent-electric-blue);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        .cursor-outer.hover-green {
+            border-color: var(--accent-acid-green);
+            background: rgba(167, 245, 66, 0.1);
+        }
+        .cursor-outer.hover-gold {
+            border-color: var(--accent-gold);
+            background: rgba(255, 184, 0, 0.1);
         }
 
         /* Плавный скролл */
@@ -51,14 +187,11 @@
             width: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
             background: var(--border-subtle);
             border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
         }
 
         /* Контейнер */
@@ -66,6 +199,8 @@
             max-width: 960px;
             margin: 0 auto;
             padding: 0 24px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Шапка */
@@ -73,20 +208,18 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(10, 10, 11, 0.82);
+            background: rgba(10, 10, 11, 0.78);
             backdrop-filter: blur(20px) saturate(160%);
             -webkit-backdrop-filter: blur(20px) saturate(160%);
             border-bottom: 1px solid var(--border-subtle);
             padding: 16px 0;
             transition: all var(--transition-smooth);
         }
-
         .header-inner {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .logo {
             font-size: 1.7rem;
             font-weight: 900;
@@ -97,13 +230,24 @@
             background-clip: text;
             animation: logoShift 6s ease-in-out infinite;
             background-size: 200% 200%;
+            position: relative;
+            text-shadow: none;
+            filter: drop-shadow(0 0 18px rgba(255, 45, 120, 0.3));
         }
-
         @keyframes logoShift {
-            0%, 100% { background-position: 0% 50%; }
-            25% { background-position: 100% 0%; }
-            50% { background-position: 100% 100%; }
-            75% { background-position: 0% 100%; }
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            25% {
+                background-position: 100% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            75% {
+                background-position: 0% 100%;
+            }
         }
 
         .nav-links {
@@ -111,7 +255,6 @@
             gap: 28px;
             list-style: none;
         }
-
         .nav-links a {
             color: var(--text-secondary);
             text-decoration: none;
@@ -120,8 +263,8 @@
             position: relative;
             padding: 4px 0;
             transition: color var(--transition-smooth);
+            cursor: none !important;
         }
-
         .nav-links a::after {
             content: '';
             position: absolute;
@@ -132,21 +275,27 @@
             border-radius: 2px;
             transition: width var(--transition-smooth);
         }
-
+        .nav-links a:nth-child(1):hover::after {
+            width: 100%;
+            background: var(--accent-neon-pink);
+        }
+        .nav-links a:nth-child(2):hover::after {
+            width: 100%;
+            background: var(--accent-electric-blue);
+        }
+        .nav-links a:nth-child(3):hover::after {
+            width: 100%;
+            background: var(--accent-acid-green);
+        }
         .nav-links a:hover {
             color: var(--text-primary);
         }
 
-        .nav-links a:nth-child(1):hover::after { width: 100%; background: var(--accent-neon-pink); }
-        .nav-links a:nth-child(2):hover::after { width: 100%; background: var(--accent-electric-blue); }
-        .nav-links a:nth-child(3):hover::after { width: 100%; background: var(--accent-acid-green); }
-
-        /* Бургер */
         .burger {
             display: none;
             flex-direction: column;
             gap: 5px;
-            cursor: pointer;
+            cursor: none !important;
             z-index: 101;
         }
         .burger span {
@@ -166,25 +315,65 @@
             transform: rotate(-45deg) translate(5px, -5px);
         }
 
-        /* Секции */
+        /* Переключатель режима */
+        .mode-toggle {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: var(--border-subtle);
+            border-radius: 13px;
+            cursor: none !important;
+            transition: background var(--transition-smooth);
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+        .mode-toggle::after {
+            content: '🌙';
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #1a1a1d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            transition: all var(--transition-smooth);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .mode-toggle.active {
+            background: rgba(0, 212, 255, 0.2);
+        }
+        .mode-toggle.active::after {
+            content: '🌆';
+            left: 23px;
+        }
+
+        /* Секции — перелистывание */
         .section {
             padding: 80px 0;
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
+            transform: rotateY(8deg) translateZ(-30px) translateY(30px);
+            transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
         .section.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: rotateY(0deg) translateZ(0) translateY(0);
         }
 
         .section-title {
             font-size: 2.2rem;
-            font-weight: 800;
+            font-weight: 900;
             letter-spacing: -0.03em;
             margin-bottom: 8px;
+            position: relative;
+            display: inline-block;
+            text-shadow: 3px 3px 0px rgba(255, 45, 120, 0.15), -2px -2px 0px rgba(0, 212, 255, 0.1);
         }
-
         .section-subtitle {
             font-size: 0.95rem;
             color: var(--text-muted);
@@ -192,7 +381,7 @@
             font-weight: 400;
         }
 
-        /* Карточки */
+        /* Стеклянные карточки */
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -201,15 +390,18 @@
 
         .card {
             background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
             padding: 28px 24px;
             transition: all var(--transition-bounce);
-            cursor: default;
+            cursor: none !important;
             position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
+            perspective: 800px;
         }
-
         .card::before {
             content: '';
             position: absolute;
@@ -217,55 +409,136 @@
             left: 0;
             right: 0;
             height: 3px;
+            z-index: 2;
         }
-
         .card:hover {
             transform: translateY(-6px);
-            border-color: #3f3f46;
+            border-color: var(--border-hover);
             box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.5);
         }
+        .card.pink::before {
+            background: var(--accent-neon-pink);
+        }
+        .card.blue::before {
+            background: var(--accent-electric-blue);
+        }
+        .card.green::before {
+            background: var(--accent-acid-green);
+        }
+        .card.gold::before {
+            background: var(--accent-gold);
+        }
+        .card.purple::before {
+            background: var(--accent-purple);
+        }
 
-        .card.pink::before { background: var(--accent-neon-pink); }
-        .card.blue::before { background: var(--accent-electric-blue); }
-        .card.green::before { background: var(--accent-acid-green); }
-        .card.gold::before { background: var(--accent-gold); }
-        .card.purple::before { background: var(--accent-purple); }
+        /* Блик от мыши */
+        .glow-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: var(--radius-lg);
+        }
+        .card:hover .glow-effect,
+        .hero-card:hover .glow-effect,
+        .interview-block:hover .glow-effect,
+        .event-item:hover .glow-effect {
+            opacity: 1;
+        }
 
         .card-icon {
             font-size: 2rem;
             margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
         }
-
         .card-title {
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 8px;
             letter-spacing: -0.02em;
+            position: relative;
+            z-index: 2;
         }
-
         .card-text {
             font-size: 0.9rem;
             color: var(--text-secondary);
             line-height: 1.7;
+            position: relative;
+            z-index: 2;
         }
-
         .card-meta {
             display: flex;
             gap: 16px;
             margin-top: 16px;
             font-size: 0.8rem;
             color: var(--text-muted);
+            position: relative;
+            z-index: 2;
         }
-
         .card-meta span {
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
+        /* Стикеры */
+        .sticker {
+            position: absolute;
+            z-index: 10;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-radius: 4px;
+            transform: rotate(-3deg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+            cursor: grab;
+            user-select: none;
+        }
+        .sticker:active {
+            cursor: grabbing;
+        }
+        .sticker.new {
+            top: -10px;
+            right: 16px;
+            background: var(--accent-neon-pink);
+            color: #fff;
+        }
+        .sticker.hot {
+            top: 20px;
+            right: -8px;
+            background: var(--accent-gold);
+            color: #000;
+            transform: rotate(5deg);
+        }
+        .sticker.exclusive {
+            top: -10px;
+            left: 16px;
+            background: var(--accent-purple);
+            color: #fff;
+            transform: rotate(-5deg);
+        }
+        .card:hover .sticker {
+            transform: rotate(0deg) scale(1.05);
+        }
+        .card:active .sticker {
+            transform: rotate(0deg) scale(0.95);
+        }
+
         /* Топ-трек — крупная карточка */
         .hero-card {
             background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
             padding: 40px 32px;
@@ -275,8 +548,10 @@
             position: relative;
             overflow: hidden;
             transition: all var(--transition-bounce);
+            cursor: none !important;
+            transform-style: preserve-3d;
+            perspective: 800px;
         }
-
         .hero-card::after {
             content: '';
             position: absolute;
@@ -286,14 +561,13 @@
             height: 300px;
             background: radial-gradient(circle, rgba(255, 45, 120, 0.12) 0%, transparent 70%);
             pointer-events: none;
+            z-index: 0;
         }
-
         .hero-card:hover {
-            border-color: #3f3f46;
+            border-color: var(--border-hover);
             transform: translateY(-4px);
             box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
         }
-
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -307,50 +581,159 @@
             width: fit-content;
             letter-spacing: 0.04em;
             text-transform: uppercase;
+            position: relative;
+            z-index: 2;
         }
-
         .hero-title {
             font-size: 2rem;
             font-weight: 800;
             letter-spacing: -0.03em;
             line-height: 1.2;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 0px rgba(255, 45, 120, 0.2);
         }
-
         .hero-artist {
             font-size: 1.1rem;
             color: var(--text-secondary);
+            position: relative;
+            z-index: 2;
         }
-
         .hero-stats {
             display: flex;
             flex-wrap: wrap;
             gap: 24px;
+            position: relative;
+            z-index: 2;
         }
-
         .stat {
             display: flex;
             flex-direction: column;
             gap: 2px;
         }
         .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
         }
         .stat-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
+        }
+        .stat-value.pink {
+            color: var(--accent-neon-pink);
+        }
+        .stat-value.blue {
+            color: var(--accent-electric-blue);
+        }
+        .stat-value.green {
+            color: var(--accent-acid-green);
         }
 
-        .stat-value.pink { color: var(--accent-neon-pink); }
-        .stat-value.blue { color: var(--accent-electric-blue); }
-        .stat-value.green { color: var(--accent-acid-green); }
+        /* Аудиоволна */
+        .audio-wave {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 40px;
+            position: relative;
+            z-index: 2;
+            margin-top: 4px;
+        }
+        .audio-wave .bar {
+            width: 4px;
+            border-radius: 2px;
+            transition: height 0.15s ease;
+        }
+        .audio-wave .bar:nth-child(odd) {
+            background: var(--accent-neon-pink);
+        }
+        .audio-wave .bar:nth-child(even) {
+            background: var(--accent-electric-blue);
+        }
+        .audio-wave.playing .bar {
+            animation: waveJump 0.6s ease-in-out infinite;
+        }
+        .audio-wave.playing .bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .audio-wave.playing .bar:nth-child(2) {
+            animation-delay: 0.08s;
+        }
+        .audio-wave.playing .bar:nth-child(3) {
+            animation-delay: 0.16s;
+        }
+        .audio-wave.playing .bar:nth-child(4) {
+            animation-delay: 0.24s;
+        }
+        .audio-wave.playing .bar:nth-child(5) {
+            animation-delay: 0.32s;
+        }
+        .audio-wave.playing .bar:nth-child(6) {
+            animation-delay: 0.4s;
+        }
+        .audio-wave.playing .bar:nth-child(7) {
+            animation-delay: 0.48s;
+        }
+        .audio-wave.playing .bar:nth-child(8) {
+            animation-delay: 0.56s;
+        }
+        @keyframes waveJump {
+            0%,
+            100% {
+                height: 6px;
+            }
+            40% {
+                height: 30px;
+            }
+            70% {
+                height: 12px;
+            }
+        }
+
+        .play-btn {
+            position: relative;
+            z-index: 2;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--text-secondary);
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: none !important;
+            transition: all var(--transition-smooth);
+            flex-shrink: 0;
+        }
+        .play-btn:hover {
+            border-color: var(--accent-neon-pink);
+            color: var(--accent-neon-pink);
+            box-shadow: 0 0 24px rgba(255, 45, 120, 0.3);
+        }
+        .play-btn.playing {
+            border-color: var(--accent-neon-pink);
+            background: rgba(255, 45, 120, 0.1);
+        }
+
+        .hero-bottom {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 2;
+        }
 
         /* Интервью */
         .interview-block {
             background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
             padding: 36px 28px;
@@ -359,14 +742,15 @@
             align-items: flex-start;
             transition: all var(--transition-bounce);
             position: relative;
+            cursor: none !important;
+            transform-style: preserve-3d;
+            perspective: 800px;
         }
-
         .interview-block:hover {
-            border-color: #3f3f46;
+            border-color: var(--border-hover);
             transform: translateY(-4px);
             box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
         }
-
         .interview-avatar {
             width: 80px;
             height: 80px;
@@ -377,18 +761,20 @@
             justify-content: center;
             font-size: 2rem;
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-neon-pink));
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 8px 30px rgba(180, 77, 255, 0.3);
         }
-
         .interview-content {
             flex: 1;
+            position: relative;
+            z-index: 2;
         }
-
         .interview-name {
             font-weight: 700;
             font-size: 1.15rem;
             margin-bottom: 4px;
         }
-
         .interview-role {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -396,7 +782,6 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
-
         .qa {
             margin-bottom: 16px;
         }
@@ -415,7 +800,6 @@
             color: var(--text-secondary);
             padding-left: 16px;
         }
-
         .blog-note {
             margin-top: 20px;
             padding: 14px 18px;
@@ -425,6 +809,8 @@
             font-size: 0.85rem;
             color: var(--text-secondary);
             font-style: italic;
+            position: relative;
+            z-index: 2;
         }
 
         /* Афиша */
@@ -433,24 +819,27 @@
             flex-direction: column;
             gap: 14px;
         }
-
         .event-item {
             display: flex;
             align-items: center;
             gap: 20px;
             background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             padding: 18px 22px;
             transition: all var(--transition-bounce);
+            cursor: none !important;
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 800px;
         }
-
         .event-item:hover {
-            border-color: #3f3f46;
+            border-color: var(--border-hover);
             transform: translateX(6px);
             box-shadow: 0 12px 40px -15px rgba(0, 0, 0, 0.5);
         }
-
         .event-date {
             display: flex;
             flex-direction: column;
@@ -458,11 +847,14 @@
             justify-content: center;
             min-width: 60px;
             text-align: center;
+            position: relative;
+            z-index: 2;
         }
         .event-day {
             font-size: 1.6rem;
             font-weight: 800;
             line-height: 1;
+            font-family: 'Courier New', monospace;
         }
         .event-month {
             font-size: 0.7rem;
@@ -470,9 +862,10 @@
             letter-spacing: 0.06em;
             color: var(--text-muted);
         }
-
         .event-info {
             flex: 1;
+            position: relative;
+            z-index: 2;
         }
         .event-name {
             font-weight: 700;
@@ -483,7 +876,6 @@
             font-size: 0.8rem;
             color: var(--text-muted);
         }
-
         .event-tag {
             font-size: 0.7rem;
             font-weight: 700;
@@ -492,11 +884,210 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
             white-space: nowrap;
+            position: relative;
+            z-index: 2;
         }
-        .tag-concert { background: rgba(255, 45, 120, 0.15); color: var(--accent-neon-pink); }
-        .tag-party { background: rgba(0, 212, 255, 0.15); color: var(--accent-electric-blue); }
-        .tag-auto { background: rgba(167, 245, 66, 0.15); color: var(--accent-acid-green); }
-        .tag-fest { background: rgba(255, 184, 0, 0.15); color: var(--accent-gold); }
+        .tag-concert {
+            background: rgba(255, 45, 120, 0.15);
+            color: var(--accent-neon-pink);
+        }
+        .tag-party {
+            background: rgba(0, 212, 255, 0.15);
+            color: var(--accent-electric-blue);
+        }
+        .tag-auto {
+            background: rgba(167, 245, 66, 0.15);
+            color: var(--accent-acid-green);
+        }
+        .tag-fest {
+            background: rgba(255, 184, 0, 0.15);
+            color: var(--accent-gold);
+        }
+
+        /* Интерактивная карта */
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            margin-bottom: 28px;
+            overflow: hidden;
+            cursor: none !important;
+        }
+        .map-svg {
+            width: 100%;
+            height: 100%;
+        }
+        .map-city {
+            fill: rgba(255, 255, 255, 0.03);
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+            transition: fill 0.4s ease;
+        }
+        .map-city:hover {
+            fill: rgba(255, 255, 255, 0.06);
+        }
+        .map-dot {
+            fill: var(--accent-neon-pink);
+            stroke: none;
+            animation: pulseDot 2s ease-in-out infinite;
+            cursor: none !important;
+            transition: r 0.3s ease;
+        }
+        .map-dot:hover {
+            r: 8;
+        }
+        .map-dot.blue {
+            fill: var(--accent-electric-blue);
+            animation-delay: -0.5s;
+        }
+        .map-dot.green {
+            fill: var(--accent-acid-green);
+            animation-delay: -1s;
+        }
+        .map-dot.gold {
+            fill: var(--accent-gold);
+            animation-delay: -1.5s;
+        }
+        @keyframes pulseDot {
+            0%,
+            100% {
+                r: 5;
+                opacity: 1;
+            }
+            50% {
+                r: 10;
+                opacity: 0.4;
+            }
+        }
+        .map-tooltip {
+            position: absolute;
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            z-index: 5;
+            white-space: nowrap;
+            color: var(--text-primary);
+        }
+        .map-tooltip.visible {
+            opacity: 1;
+        }
+
+        /* Декоративные линии */
+        .decorative-lines {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+        .decorative-lines svg {
+            width: 100%;
+            height: 100%;
+        }
+        .decorative-lines line {
+            stroke: var(--text-muted);
+            stroke-width: 0.5;
+            stroke-dasharray: 8 4;
+        }
+
+        /* Закладки-стикеры в углу */
+        .saved-stickers {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 6px;
+            pointer-events: none;
+        }
+        .saved-sticker {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #fff;
+            background: var(--accent-neon-pink);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: auto;
+            cursor: none !important;
+            transform: rotate(-2deg);
+        }
+        @keyframes popIn {
+            from {
+                transform: scale(0) rotate(-15deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(-2deg);
+                opacity: 1;
+            }
+        }
+
+        /* Режим ночного города */
+        .city-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .city-lights.active {
+            opacity: 1;
+        }
+        .city-light {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+            0%,
+            100% {
+                opacity: 0.2;
+            }
+            50% {
+                opacity: 0.9;
+            }
+        }
+        .rain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.01) 2px,
+                    rgba(255, 255, 255, 0.01) 3px);
+        }
+        .rain-overlay.active {
+            opacity: 1;
+        }
 
         /* Подвал */
         .footer {
@@ -505,8 +1096,9 @@
             text-align: center;
             font-size: 0.85rem;
             color: var(--text-muted);
+            position: relative;
+            z-index: 1;
         }
-
         .footer-accent {
             background: linear-gradient(135deg, var(--accent-neon-pink), var(--accent-electric-blue), var(--accent-acid-green));
             -webkit-background-clip: text;
@@ -515,7 +1107,7 @@
             font-weight: 700;
         }
 
-        /* Мобильные стили */
+        /* Медиа */
         @media (max-width: 768px) {
             .header-inner {
                 flex-wrap: wrap;
@@ -549,7 +1141,7 @@
                 gap: 16px;
             }
             .stat-value {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             .interview-block {
                 flex-direction: column;
@@ -566,26 +1158,47 @@
                 flex-wrap: wrap;
                 gap: 10px;
             }
-        }
-
-        @media (max-width: 480px) {
-            .hero-stats {
-                flex-direction: column;
-                gap: 10px;
+            .map-container {
+                height: 200px;
             }
-            .card-grid {
-                grid-template-columns: 1fr;
+            .sticker.new,
+            .sticker.hot,
+            .sticker.exclusive {
+                display: none;
             }
-            .event-date {
-                min-width: 48px;
+            .cursor-outer,
+            .cursor-inner {
+                display: none;
             }
-            .event-day {
-                font-size: 1.3rem;
+            * {
+                cursor: auto !important;
             }
         }
     </style>
 </head>
 <body>
+
+    <!-- Шумовой фон -->
+    <div class="noise-overlay"></div>
+
+    <!-- Градиентные пятна -->
+    <div class="bg-blobs">
+        <div class="bg-blob"></div>
+        <div class="bg-blob"></div>
+        <div class="bg-blob"></div>
+        <div class="bg-blob"></div>
+    </div>
+
+    <!-- Режим ночного города -->
+    <div class="city-lights" id="cityLights"></div>
+    <div class="rain-overlay" id="rainOverlay"></div>
+
+    <!-- Кастомный курсор -->
+    <div class="cursor-outer" id="cursorOuter"></div>
+    <div class="cursor-inner" id="cursorInner"></div>
+
+    <!-- Сохранённые стикеры -->
+    <div class="saved-stickers" id="savedStickers"></div>
 
     <!-- Шапка -->
     <header class="header" id="header">
@@ -601,6 +1214,7 @@
                 <li><a href="#interview">🎤 Интервью</a></li>
                 <li><a href="#events">📅 Афиша</a></li>
             </ul>
+            <div class="mode-toggle" id="modeToggle" title="Режим ночного города"></div>
         </div>
     </header>
 
@@ -611,22 +1225,37 @@
             <h2 class="section-title">Топ-1 трек недели</h2>
             <p class="section-subtitle">Выбор «ФРЕШМЕНА» — то, что звучит из каждого окна Сан-Андреаса</p>
 
-            <div class="hero-card">
+            <div class="hero-card" id="heroCard">
+                <div class="glow-effect"></div>
+                <div class="sticker hot">HOT</div>
                 <div class="hero-badge">🏆 #1 в чарте</div>
                 <div class="hero-title">«Ночной Патруль»</div>
                 <div class="hero-artist">Исполнитель: MC Лоурайдер & DJ Побережье</div>
                 <div class="hero-stats">
                     <div class="stat">
-                        <span class="stat-value pink">47</span>
+                        <span class="stat-value pink" data-target="47">0</span>
                         <span class="stat-label">Ротаций на радио</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-value blue">12</span>
+                        <span class="stat-value blue" data-target="12">0</span>
                         <span class="stat-label">Клубов играли</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-value green">84</span>
+                        <span class="stat-value green" data-target="84">0</span>
                         <span class="stat-label">Копий продано</span>
+                    </div>
+                </div>
+                <div class="hero-bottom">
+                    <button class="play-btn" id="playBtn" aria-label="Play preview">▶</button>
+                    <div class="audio-wave" id="audioWave">
+                        <div class="bar" style="height:8px"></div>
+                        <div class="bar" style="height:18px"></div>
+                        <div class="bar" style="height:6px"></div>
+                        <div class="bar" style="height:28px"></div>
+                        <div class="bar" style="height:12px"></div>
+                        <div class="bar" style="height:22px"></div>
+                        <div class="bar" style="height:6px"></div>
+                        <div class="bar" style="height:14px"></div>
                     </div>
                 </div>
                 <div class="card-meta">
@@ -641,7 +1270,9 @@
             <h2 class="section-title">Интервью & Блог</h2>
             <p class="section-subtitle">Герои сцены, владельцы площадок и голоса улиц</p>
 
-            <div class="interview-block">
+            <div class="interview-block" id="interviewBlock">
+                <div class="glow-effect"></div>
+                <div class="sticker exclusive">ЭКСКЛЮЗИВ</div>
                 <div class="interview-avatar">🎙️</div>
                 <div class="interview-content">
                     <div class="interview-name">DJ Побережье</div>
@@ -659,19 +1290,46 @@
                         <div class="qa-answer">Готовим совместный мини-альбом. Будет больше живых инструментов и пара неожиданных фитов. Следите за афишей.</div>
                     </div>
                     <div class="blog-note">
-                        <strong>📝 Блог редакции:</strong> Честно скажем — DJ Побережье звучит уверенно, но мы ждали больше конкретики по поводу ухода с Ghetto Records. Следим за развитием. Если мини-альбом выйдет таким же горячим, как «Ночной Патруль» — быть ещё одному хиту в нашем чарте.
+                        <strong>📝 Блог редакции:</strong> Честно скажем — DJ Побережье звучит уверенно, но мы ждали больше конкретики по поводу ухода с Ghetto Records. Следим за развитием.
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Афиша мероприятий -->
+        <!-- Афиша -->
         <section class="section" id="events">
             <h2 class="section-title">Афиша</h2>
             <p class="section-subtitle">Куда идти, что слушать, где быть на этой неделе в Сан-Андреасе</p>
 
+            <!-- Интерактивная карта -->
+            <div class="map-container" id="mapContainer">
+                <svg class="map-svg" viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Лос-Сантос -->
+                    <ellipse class="map-city" cx="180" cy="180" rx="140" ry="80" />
+                    <text x="180" y="175" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-weight="600">Лос-Сантос</text>
+                    <!-- Сан-Фиерро -->
+                    <ellipse class="map-city" cx="620" cy="80" rx="110" ry="60" />
+                    <text x="620" y="75" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-weight="600">Сан-Фиерро</text>
+                    <!-- Лас-Вентурас -->
+                    <ellipse class="map-city" cx="460" cy="210" rx="100" ry="55" />
+                    <text x="460" y="205" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-weight="600">Лас-Вентурас</text>
+                    <!-- Округа -->
+                    <ellipse class="map-city" cx="350" cy="140" rx="180" ry="90" />
+                    <text x="350" y="155" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="10" font-weight="500">Округ Боун</text>
+
+                    <!-- Точки событий -->
+                    <circle class="map-dot" cx="140" cy="170" r="5" data-event="Баттл «Слово улиц» — Alhambra" />
+                    <circle class="map-dot blue" cx="210" cy="140" r="5" data-event="Вечер лоурайдеров — Вердант Блаффс" />
+                    <circle class="map-dot green" cx="500" cy="230" r="5" data-event="DJ-сет «Электро-Вентурас» — Jizzy's" />
+                    <circle class="map-dot gold" cx="300" cy="100" r="5" data-event="Рок-опен-эйр — ранчо «Кактус»" />
+                    <circle class="map-dot" cx="600" cy="100" r="5" data-event="Кастинг танцовщиц — Pig Pen" />
+                </svg>
+                <div class="map-tooltip" id="mapTooltip"></div>
+            </div>
+
             <div class="event-list">
                 <div class="event-item">
+                    <div class="glow-effect"></div>
                     <div class="event-date">
                         <span class="event-day">22</span>
                         <span class="event-month">Мая, Сб</span>
@@ -682,8 +1340,8 @@
                     </div>
                     <span class="event-tag tag-concert">Концерт</span>
                 </div>
-
                 <div class="event-item">
+                    <div class="glow-effect"></div>
                     <div class="event-date">
                         <span class="event-day">23</span>
                         <span class="event-month">Мая, Вс</span>
@@ -694,8 +1352,8 @@
                     </div>
                     <span class="event-tag tag-auto">Авто-сходка</span>
                 </div>
-
                 <div class="event-item">
+                    <div class="glow-effect"></div>
                     <div class="event-date">
                         <span class="event-day">25</span>
                         <span class="event-month">Мая, Вт</span>
@@ -706,8 +1364,8 @@
                     </div>
                     <span class="event-tag tag-party">Вечеринка</span>
                 </div>
-
                 <div class="event-item">
+                    <div class="glow-effect"></div>
                     <div class="event-date">
                         <span class="event-day">27</span>
                         <span class="event-month">Мая, Чт</span>
@@ -718,8 +1376,8 @@
                     </div>
                     <span class="event-tag tag-fest">Фестиваль</span>
                 </div>
-
                 <div class="event-item">
+                    <div class="glow-effect"></div>
                     <div class="event-date">
                         <span class="event-day">29</span>
                         <span class="event-month">Мая, Сб</span>
@@ -735,24 +1393,66 @@
 
     </main>
 
-    <!-- Подвал -->
     <footer class="footer">
         <div class="container">
             <p>© 2026 <span class="footer-accent">ФРЕШМЕН</span> · Музыкальный журнал Сан-Андреаса</p>
-            <p style="margin-top: 6px;">Лос-Сантос · Сан-Фиерро · Лас-Вентурас · Округа</p>
-            <p style="margin-top: 6px; font-size: 0.75rem;">Твой голос. Твой ритм. Твоя улица.</p>
+            <p style="margin-top:6px;">Лос-Сантос · Сан-Фиерро · Лас-Вентурас · Округа</p>
+            <p style="margin-top:6px;font-size:0.75rem;">Твой голос. Твой ритм. Твоя улица.</p>
         </div>
     </footer>
 
     <script>
-        // Бургер-меню
+        // ==================== КАСТОМНЫЙ КУРСОР ====================
+        const cursorOuter = document.getElementById('cursorOuter');
+        const cursorInner = document.getElementById('cursorInner');
+        let mouseX = 0,
+            mouseY = 0;
+        let outerX = 0,
+            outerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorInner.style.left = mouseX + 'px';
+            cursorInner.style.top = mouseY + 'px';
+        });
+
+        function animateCursor() {
+            outerX += (mouseX - outerX) * 0.15;
+            outerY += (mouseY - outerY) * 0.15;
+            cursorOuter.style.left = outerX + 'px';
+            cursorOuter.style.top = outerY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover-эффекты курсора
+        const hoverTargets = document.querySelectorAll(
+            'a, button, .card, .hero-card, .interview-block, .event-item, .sticker, .map-dot, .burger, .mode-toggle, .play-btn');
+        hoverTargets.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                let hoverClass = 'hover';
+                if (el.closest('.interview-block')) hoverClass = 'hover';
+                else if (el.closest('#events') || el.classList.contains('map-dot')) hoverClass =
+                    'hover-green';
+                else if (el.classList.contains('hero-card') || el.closest('#top-track')) hoverClass =
+                    'hover';
+                else if (el.classList.contains('event-item') && el.querySelector('.tag-gold')) hoverClass =
+                    'hover-gold';
+                cursorOuter.classList.add(hoverClass);
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorOuter.classList.remove('hover', 'hover-blue', 'hover-green', 'hover-gold');
+            });
+        });
+
+        // ==================== БУРГЕР-МЕНЮ ====================
         const burger = document.getElementById('burger');
         const navLinks = document.getElementById('navLinks');
         burger.addEventListener('click', () => {
             burger.classList.toggle('active');
             navLinks.classList.toggle('active');
         });
-        // Закрытие при клике на ссылку
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 burger.classList.remove('active');
@@ -760,42 +1460,286 @@
             });
         });
 
-        // Анимация появления секций при скролле
+        // ==================== АНИМАЦИЯ СЕКЦИЙ (перелистывание) ====================
         const sections = document.querySelectorAll('.section');
-        const observer = new IntersectionObserver((entries) => {
+        const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
+                    // Запуск счётчиков при появлении секции топ-трека
+                    if (entry.target.id === 'top-track') {
+                        setTimeout(startCounters, 300);
+                    }
                 }
             });
-        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+        }, { threshold: 0.2, rootMargin: '0px 0px -50px 0px' });
+        sections.forEach(section => sectionObserver.observe(section));
 
-        sections.forEach(section => observer.observe(section));
+        // ==================== СЧЁТЧИКИ СТАТИСТИКИ ====================
+        function startCounters() {
+            const statValues = document.querySelectorAll('.stat-value[data-target]');
+            statValues.forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                const duration = 1500;
+                const startTime = performance.now();
+                const startVal = 0;
 
-        // Параллакс-эффект для хедера при скролле
+                function update(now) {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    stat.textContent = Math.floor(startVal + (target - startVal) * eased);
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        stat.textContent = target;
+                    }
+                }
+                requestAnimationFrame(update);
+            });
+        }
+
+        // ==================== АУДИОПЛЕЕР-ПРЕВЬЮ ====================
+        const playBtn = document.getElementById('playBtn');
+        const audioWave = document.getElementById('audioWave');
+        let isPlaying = false;
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+
+        playBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                // Создаём синтезированный звук (заглушка вместо реального аудиофайла)
+                try {
+                    audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                    oscillator = audioCtx.createOscillator();
+                    gainNode = audioCtx.createGain();
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(80, audioCtx.currentTime);
+                    oscillator.frequency.linearRampToValueAtTime(160, audioCtx.currentTime + 0.5);
+                    oscillator.frequency.linearRampToValueAtTime(120, audioCtx.currentTime + 1);
+                    gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.03, audioCtx.currentTime + 1.5);
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.start();
+                } catch (e) {
+                    console.log('Audio not supported');
+                }
+
+                isPlaying = true;
+                playBtn.textContent = '⏸';
+                playBtn.classList.add('playing');
+                audioWave.classList.add('playing');
+            } else {
+                if (oscillator) {
+                    oscillator.stop();
+                    oscillator = null;
+                }
+                if (audioCtx && audioCtx.state === 'running') {
+                    audioCtx.close();
+                    audioCtx = null;
+                }
+                isPlaying = false;
+                playBtn.textContent = '▶';
+                playBtn.classList.remove('playing');
+                audioWave.classList.remove('playing');
+            }
+        });
+
+        // ==================== БЛИК ОТ МЫШИ ====================
+        document.querySelectorAll('.glow-effect').forEach(glow => {
+            const parent = glow.parentElement;
+            parent.addEventListener('mousemove', (e) => {
+                const rect = parent.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const xPercent = (x / rect.width) * 100;
+                const yPercent = (y / rect.height) * 100;
+                glow.style.background =
+                    `radial-gradient(circle at ${xPercent}% ${yPercent}%, rgba(255,255,255,0.08) 0%, transparent 60%)`;
+            });
+            parent.addEventListener('mouseleave', () => {
+                glow.style.background = 'transparent';
+            });
+        });
+
+        // ==================== СТИКЕРЫ — ПЕРЕТАСКИВАНИЕ В ЗАКЛАДКИ ====================
+        const savedStickersContainer = document.getElementById('savedStickers');
+        document.querySelectorAll('.sticker').forEach(sticker => {
+            let isDragging = false;
+            let startX, startY, origX, origY;
+            let clone = null;
+
+            sticker.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const rect = sticker.getBoundingClientRect();
+                origX = rect.left;
+                origY = rect.top;
+                clone = sticker.cloneNode(true);
+                clone.style.position = 'fixed';
+                clone.style.left = origX + 'px';
+                clone.style.top = origY + 'px';
+                clone.style.zIndex = '10002';
+                clone.style.pointerEvents = 'none';
+                clone.style.transform = 'rotate(0deg) scale(1.1)';
+                clone.style.transition = 'none';
+                document.body.appendChild(clone);
+                sticker.style.opacity = '0.4';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging || !clone) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                clone.style.left = (origX + dx) + 'px';
+                clone.style.top = (origY + dy) + 'px';
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                if (clone) {
+                    const cloneRect = clone.getBoundingClientRect();
+                    const savedRect = savedStickersContainer.getBoundingClientRect();
+                    // Если перетащили в зону закладок
+                    if (cloneRect.right > savedRect.left &&
+                        cloneRect.left < savedRect.right &&
+                        cloneRect.bottom > savedRect.top &&
+                        cloneRect.top < savedRect.bottom) {
+                        const savedSticker = document.createElement('div');
+                        savedSticker.className = 'saved-sticker';
+                        savedSticker.textContent = sticker.textContent;
+                        savedSticker.title = 'Кликни чтобы убрать';
+                        savedSticker.addEventListener('click', () => {
+                            savedSticker.style.animation = 'popIn 0.3s ease reverse';
+                            setTimeout(() => savedSticker.remove(), 300);
+                        });
+                        savedStickersContainer.appendChild(savedSticker);
+                        // Автоудаление через 8 секунд
+                        setTimeout(() => {
+                            if (savedSticker.parentNode) {
+                                savedSticker.style.animation = 'popIn 0.3s ease reverse';
+                                setTimeout(() => savedSticker.remove(), 300);
+                            }
+                        }, 8000);
+                    }
+                    clone.remove();
+                    clone = null;
+                }
+                sticker.style.opacity = '1';
+            });
+        });
+
+        // ==================== ИНТЕРАКТИВНАЯ КАРТА ====================
+        const mapContainer = document.getElementById('mapContainer');
+        const mapTooltip = document.getElementById('mapTooltip');
+        const mapDots = document.querySelectorAll('.map-dot');
+
+        mapDots.forEach(dot => {
+            dot.addEventListener('mouseenter', (e) => {
+                const eventName = dot.getAttribute('data-event');
+                mapTooltip.textContent = eventName;
+                mapTooltip.classList.add('visible');
+            });
+            dot.addEventListener('mousemove', (e) => {
+                const rect = mapContainer.getBoundingClientRect();
+                mapTooltip.style.left = (e.clientX - rect.left + 16) + 'px';
+                mapTooltip.style.top = (e.clientY - rect.top - 40) + 'px';
+            });
+            dot.addEventListener('mouseleave', () => {
+                mapTooltip.classList.remove('visible');
+            });
+        });
+
+        // ==================== РЕЖИМ НОЧНОГО ГОРОДА ====================
+        const modeToggle = document.getElementById('modeToggle');
+        const cityLights = document.getElementById('cityLights');
+        const rainOverlay = document.getElementById('rainOverlay');
+        let nightMode = false;
+
+        // Генерируем огни города
+        function generateLights() {
+            for (let i = 0; i < 80; i++) {
+                const light = document.createElement('div');
+                light.className = 'city-light';
+                light.style.left = Math.random() * 100 + '%';
+                light.style.top = Math.random() * 100 + '%';
+                light.style.animationDelay = Math.random() * 4 + 's';
+                light.style.animationDuration = (2 + Math.random() * 3) + 's';
+                light.style.width = (1 + Math.random() * 3) + 'px';
+                light.style.height = light.style.width;
+                cityLights.appendChild(light);
+            }
+        }
+        generateLights();
+
+        modeToggle.addEventListener('click', () => {
+            nightMode = !nightMode;
+            modeToggle.classList.toggle('active', nightMode);
+            cityLights.classList.toggle('active', nightMode);
+            rainOverlay.classList.toggle('active', nightMode);
+        });
+
+        // ==================== ХЕДЕР — ТЕНЬ ПРИ СКРОЛЛЕ ====================
         const header = document.getElementById('header');
-        let lastScroll = 0;
         window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            if (currentScroll > 80) {
-                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.3)';
+            if (window.pageYOffset > 80) {
+                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.35)';
             } else {
                 header.style.boxShadow = 'none';
             }
-            lastScroll = currentScroll;
         });
 
-        // Эффект при наведении на карточки — лёгкое свечение
-        document.querySelectorAll('.hero-card, .interview-block, .event-item').forEach(el => {
-            el.addEventListener('mousemove', (e) => {
-                const rect = el.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                el.style.setProperty('--mouse-x', `${x}px`);
-                el.style.setProperty('--mouse-y', `${y}px`);
+        // ==================== ДЕКОРАТИВНЫЕ ЛИНИИ ====================
+        function addDecorativeLines() {
+            const sectionsAll = document.querySelectorAll('.section');
+            sectionsAll.forEach(section => {
+                const linesDiv = document.createElement('div');
+                linesDiv.className = 'decorative-lines';
+                linesDiv.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: -40px;
+                    width: 120px;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 0;
+                    opacity: 0.12;
+                `;
+                linesDiv.innerHTML = `
+                    <svg viewBox="0 0 120 400" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="0" y1="0" x2="100" y2="80" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="6 4"/>
+                        <line x1="20" y1="150" x2="100" y2="200" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="8 5"/>
+                        <line x1="10" y1="300" x2="90" y2="370" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="5 3"/>
+                        <circle cx="100" cy="80" r="2" fill="var(--accent-neon-pink)" opacity="0.5"/>
+                        <circle cx="100" cy="200" r="2" fill="var(--accent-electric-blue)" opacity="0.5"/>
+                    </svg>`;
+                section.style.position = 'relative';
+                section.appendChild(linesDiv);
             });
-        });
+        }
+        addDecorativeLines();
+
+        console.log('🎵 ФРЕШМЕН — все 15 фич активированы!');
+        console.log('  ✓ Шумовой фон');
+        console.log('  ✓ Градиентные пятна');
+        console.log('  ✓ Типографика с тенью');
+        console.log('  ✓ Стеклянные карточки');
+        console.log('  ✓ Стикеры');
+        console.log('  ✓ Аудиоволна');
+        console.log('  ✓ Декоративные линии');
+        console.log('  ✓ Кастомный курсор');
+        console.log('  ✓ Перелистывание секций');
+        console.log('  ✓ Интерактивная карта');
+        console.log('  ✓ Живые счётчики');
+        console.log('  ✓ Аудиоплеер');
+        console.log('  ✓ Перетаскиваемые стикеры');
+        console.log('  ✓ Блик от мыши');
+        console.log('  ✓ Режим ночного города');
     </script>
 
 </body>
