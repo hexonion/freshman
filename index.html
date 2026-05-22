@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ФРЕШМЕН — музыкальный журнал Сан-Андреас</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #121214;
+            --bg-card: #18181b;
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-subtle: #27272a;
+            --accent-neon-pink: #ff2d78;
+            --accent-electric-blue: #00d4ff;
+            --accent-acid-green: #a7f542;
+            --accent-gold: #ffb800;
+            --accent-purple: #b44dff;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition-smooth: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Плавный скролл */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Кастомный скроллбар */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-subtle);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Контейнер */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Шапка */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 11, 0.82);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 16px 0;
+            transition: all var(--transition-smooth);
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.7rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--accent-neon-pink), var(--accent-electric-blue), var(--accent-acid-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoShift 6s ease-in-out infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes logoShift {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+            padding: 4px 0;
+            transition: color var(--transition-smooth);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            border-radius: 2px;
+            transition: width var(--transition-smooth);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:nth-child(1):hover::after { width: 100%; background: var(--accent-neon-pink); }
+        .nav-links a:nth-child(2):hover::after { width: 100%; background: var(--accent-electric-blue); }
+        .nav-links a:nth-child(3):hover::after { width: 100%; background: var(--accent-acid-green); }
+
+        /* Бургер */
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 101;
+        }
+        .burger span {
+            width: 26px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all var(--transition-smooth);
+        }
+        .burger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .burger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .burger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Секции */
+        .section {
+            padding: 80px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        /* Карточки */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            transition: all var(--transition-bounce);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: #3f3f46;
+            box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        .card.pink::before { background: var(--accent-neon-pink); }
+        .card.blue::before { background: var(--accent-electric-blue); }
+        .card.green::before { background: var(--accent-acid-green); }
+        .card.gold::before { background: var(--accent-gold); }
+        .card.purple::before { background: var(--accent-purple); }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Топ-трек — крупная карточка */
+        .hero-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-bounce);
+        }
+
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 45, 120, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-card:hover {
+            border-color: #3f3f46;
+            transform: translateY(-4px);
+            box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 184, 0, 0.12);
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            width: fit-content;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+        }
+
+        .hero-artist {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .hero-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value.pink { color: var(--accent-neon-pink); }
+        .stat-value.blue { color: var(--accent-electric-blue); }
+        .stat-value.green { color: var(--accent-acid-green); }
+
+        /* Интервью */
+        .interview-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 36px 28px;
+            display: flex;
+            gap: 28px;
+            align-items: flex-start;
+            transition: all var(--transition-bounce);
+            position: relative;
+        }
+
+        .interview-block:hover {
+            border-color: #3f3f46;
+            transform: translateY(-4px);
+            box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
+        }
+
+        .interview-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-neon-pink));
+        }
+
+        .interview-content {
+            flex: 1;
+        }
+
+        .interview-name {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+
+        .interview-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .qa {
+            margin-bottom: 16px;
+        }
+        .qa-question {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .qa-question::before {
+            content: '— ';
+            color: var(--accent-purple);
+            font-weight: 700;
+        }
+        .qa-answer {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            padding-left: 16px;
+        }
+
+        .blog-note {
+            margin-top: 20px;
+            padding: 14px 18px;
+            border-left: 3px solid var(--accent-neon-pink);
+            background: rgba(255, 45, 120, 0.05);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* Афиша */
+        .event-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 18px 22px;
+            transition: all var(--transition-bounce);
+        }
+
+        .event-item:hover {
+            border-color: #3f3f46;
+            transform: translateX(6px);
+            box-shadow: 0 12px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        .event-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+            text-align: center;
+        }
+        .event-day {
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .event-month {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+
+        .event-info {
+            flex: 1;
+        }
+        .event-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        .event-venue {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .event-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+        }
+        .tag-concert { background: rgba(255, 45, 120, 0.15); color: var(--accent-neon-pink); }
+        .tag-party { background: rgba(0, 212, 255, 0.15); color: var(--accent-electric-blue); }
+        .tag-auto { background: rgba(167, 245, 66, 0.15); color: var(--accent-acid-green); }
+        .tag-fest { background: rgba(255, 184, 0, 0.15); color: var(--accent-gold); }
+
+        /* Подвал */
+        .footer {
+            border-top: 1px solid var(--border-subtle);
+            padding: 32px 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer-accent {
+            background: linear-gradient(135deg, var(--accent-neon-pink), var(--accent-electric-blue), var(--accent-acid-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* Мобильные стили */
+        @media (max-width: 768px) {
+            .header-inner {
+                flex-wrap: wrap;
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 12px;
+                padding-top: 16px;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .burger {
+                display: flex;
+            }
+            .section {
+                padding: 48px 0;
+            }
+            .section-title {
+                font-size: 1.6rem;
+            }
+            .hero-card {
+                padding: 24px 20px;
+            }
+            .hero-title {
+                font-size: 1.4rem;
+            }
+            .hero-stats {
+                gap: 16px;
+            }
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            .interview-block {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .qa-answer {
+                padding-left: 0;
+            }
+            .blog-note {
+                text-align: left;
+            }
+            .event-item {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            .event-date {
+                min-width: 48px;
+            }
+            .event-day {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header class="header" id="header">
+        <div class="container header-inner">
+            <div class="logo">ФРЕШМЕН</div>
+            <div class="burger" id="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#top-track">🎵 Топ трека</a></li>
+                <li><a href="#interview">🎤 Интервью</a></li>
+                <li><a href="#events">📅 Афиша</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Топ-1 трек недели -->
+        <section class="section" id="top-track">
+            <h2 class="section-title">Топ-1 трек недели</h2>
+            <p class="section-subtitle">Выбор «ФРЕШМЕНА» — то, что звучит из каждого окна Сан-Андреаса</p>
+
+            <div class="hero-card">
+                <div class="hero-badge">🏆 #1 в чарте</div>
+                <div class="hero-title">«Ночной Патруль»</div>
+                <div class="hero-artist">Исполнитель: MC Лоурайдер & DJ Побережье</div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-value pink">47</span>
+                        <span class="stat-label">Ротаций на радио</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value blue">12</span>
+                        <span class="stat-label">Клубов играли</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value green">84</span>
+                        <span class="stat-label">Копий продано</span>
+                    </div>
+                </div>
+                <div class="card-meta">
+                    <span>📀 Лейбл: Ghetto Records</span>
+                    <span>🎧 Продюсер: BeatMaker_X</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Интервью и блог -->
+        <section class="section" id="interview">
+            <h2 class="section-title">Интервью & Блог</h2>
+            <p class="section-subtitle">Герои сцены, владельцы площадок и голоса улиц</p>
+
+            <div class="interview-block">
+                <div class="interview-avatar">🎙️</div>
+                <div class="interview-content">
+                    <div class="interview-name">DJ Побережье</div>
+                    <div class="interview-role">Резидент клуба «Alhambra», Лос-Сантос</div>
+                    <div class="qa">
+                        <div class="qa-question">Как родился трек «Ночной Патруль»?</div>
+                        <div class="qa-answer">Мы с MC Лоурайдером засели в студии в три часа ночи после его сета в Идлвуде. Бит написался за полчаса, текст — ещё быстрее. Это чистый поток.</div>
+                    </div>
+                    <div class="qa">
+                        <div class="qa-question">Слухи о конфликте с Ghetto Records?</div>
+                        <div class="qa-answer">Никакого конфликта. Просто мы хотим двигаться дальше. Ghetto — наш дом, но пришло время расширять карту.</div>
+                    </div>
+                    <div class="qa">
+                        <div class="qa-question">Что дальше?</div>
+                        <div class="qa-answer">Готовим совместный мини-альбом. Будет больше живых инструментов и пара неожиданных фитов. Следите за афишей.</div>
+                    </div>
+                    <div class="blog-note">
+                        <strong>📝 Блог редакции:</strong> Честно скажем — DJ Побережье звучит уверенно, но мы ждали больше конкретики по поводу ухода с Ghetto Records. Следим за развитием. Если мини-альбом выйдет таким же горячим, как «Ночной Патруль» — быть ещё одному хиту в нашем чарте.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Афиша мероприятий -->
+        <section class="section" id="events">
+            <h2 class="section-title">Афиша</h2>
+            <p class="section-subtitle">Куда идти, что слушать, где быть на этой неделе в Сан-Андреасе</p>
+
+            <div class="event-list">
+                <div class="event-item">
+                    <div class="event-date">
+                        <span class="event-day">22</span>
+                        <span class="event-month">Мая, Сб</span>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">Баттл «Слово улиц»</div>
+                        <div class="event-venue">Клуб Alhambra, Идлвуд, Лос-Сантос · 21:00</div>
+                    </div>
+                    <span class="event-tag tag-concert">Концерт</span>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-date">
+                        <span class="event-day">23</span>
+                        <span class="event-month">Мая, Вс</span>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">Вечер лоурайдеров</div>
+                        <div class="event-venue">Вердант Блаффс, Лос-Сантос · 19:00</div>
+                    </div>
+                    <span class="event-tag tag-auto">Авто-сходка</span>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-date">
+                        <span class="event-day">25</span>
+                        <span class="event-month">Мая, Вт</span>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">DJ-сет «Электро-Вентурас»</div>
+                        <div class="event-venue">Jizzy's, Лас-Вентурас · 22:00</div>
+                    </div>
+                    <span class="event-tag tag-party">Вечеринка</span>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-date">
+                        <span class="event-day">27</span>
+                        <span class="event-month">Мая, Чт</span>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">Рок-опен-эйр в пустыне</div>
+                        <div class="event-venue">Округ Боун, ранчо «Кактус» · 18:00</div>
+                    </div>
+                    <span class="event-tag tag-fest">Фестиваль</span>
+                </div>
+
+                <div class="event-item">
+                    <div class="event-date">
+                        <span class="event-day">29</span>
+                        <span class="event-month">Мая, Сб</span>
+                    </div>
+                    <div class="event-info">
+                        <div class="event-name">Кастинг танцовщиц</div>
+                        <div class="event-venue">Клуб Pig Pen, Сан-Фиерро · 15:00</div>
+                    </div>
+                    <span class="event-tag tag-party">Кастинг</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 <span class="footer-accent">ФРЕШМЕН</span> · Музыкальный журнал Сан-Андреаса</p>
+            <p style="margin-top: 6px;">Лос-Сантос · Сан-Фиерро · Лас-Вентурас · Округа</p>
+            <p style="margin-top: 6px; font-size: 0.75rem;">Твой голос. Твой ритм. Твоя улица.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Бургер-меню
+        const burger = document.getElementById('burger');
+        const navLinks = document.getElementById('navLinks');
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+        // Закрытие при клике на ссылку
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                burger.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Анимация появления секций при скролле
+        const sections = document.querySelectorAll('.section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+        sections.forEach(section => observer.observe(section));
+
+        // Параллакс-эффект для хедера при скролле
+        const header = document.getElementById('header');
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > 80) {
+                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.3)';
+            } else {
+                header.style.boxShadow = 'none';
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Эффект при наведении на карточки — лёгкое свечение
+        document.querySelectorAll('.hero-card, .interview-block, .event-item').forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                el.style.setProperty('--mouse-x', `${x}px`);
+                el.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+
+</body>
+</html>
