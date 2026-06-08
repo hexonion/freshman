@@ -1,0 +1,48 @@
+.bgImage {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  z-index: 1; opacity: 0.55;
+  filter: brightness(0.6) saturate(0.8);
+  pointer-events: none;
+}
+.bgOverlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(10,10,11,0.8) 100%);
+  z-index: 1; pointer-events: none;
+}
+.main {
+  max-width: 960px; margin: 0 auto; padding: 40px 24px 60px;
+  display: flex; flex-direction: column; gap: 48px;
+  position: relative; z-index: 2;
+}
+.issue {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding-bottom: 20px; border-bottom: 2px solid var(--border-subtle);
+}
+.issueLeft {
+  display: flex; align-items: baseline; gap: 2px;
+}
+.issueHash {
+  font-size: 2rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-neon-pink), var(--accent-electric-blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.issueNum {
+  font-size: 3rem; font-weight: 900; letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--accent-neon-pink), var(--accent-electric-blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.issueRight {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+}
+.issueLabel {
+  font-size: 0.65rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.issueDate {
+  font-size: 0.85rem; color: var(--text-secondary);
+  font-weight: 600; letter-spacing: 0.04em;
+}

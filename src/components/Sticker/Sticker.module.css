@@ -1,0 +1,19 @@
+.sticker {
+  position: absolute; z-index: 10; padding: 5px 12px;
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.06em; border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease; pointer-events: none; user-select: none;
+}
+.hot {
+  top: 18px; right: -8px; background: var(--accent-gold);
+  color: #000; transform: rotate(4deg);
+}
+.exclusive {
+  top: -8px; left: 16px; background: var(--accent-purple);
+  color: #fff; transform: rotate(-4deg);
+}
+.new {
+  top: -8px; right: 14px; background: var(--accent-neon-pink);
+  color: #fff;
+}
