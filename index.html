@@ -1,1746 +1,358 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ФРЕШМЕН — музыкальный журнал Сан-Андреас</title>
-    <style>
-        :root {
-            --bg-primary: #0a0a0b;
-            --bg-secondary: #121214;
-            --bg-card: rgba(24, 24, 27, 0.7);
-            --text-primary: #f4f4f5;
-            --text-secondary: #a1a1aa;
-            --text-muted: #71717a;
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --border-hover: rgba(255, 255, 255, 0.12);
-            --accent-neon-pink: #ff2d78;
-            --accent-electric-blue: #00d4ff;
-            --accent-acid-green: #a7f542;
-            --accent-gold: #ffb800;
-            --accent-purple: #b44dff;
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 20px;
-            --transition-smooth: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
-            --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --cursor-size: 20px;
-            --cursor-dot: 4px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FRESHMAN MEDIA GROUP</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none !important;
-        }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      padding: 1.5rem;
+      text-align: center;
+      background: #0f0f1a;
+      overflow: hidden;
+      position: relative;
+    }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            position: relative;
-            user-select: none;
-        }
+    /* Анимированный фон */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: 
+        radial-gradient(ellipse at 80% 0%, rgba(234, 179, 8, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 20%, rgba(150, 200, 255, 0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 60% 100%, rgba(234, 179, 8, 0.08) 0%, transparent 40%),
+        linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+      animation: pulse 8s ease-in-out infinite alternate;
+    }
 
-        /* Шумовой фон */
-        .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.035;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 200px 200px;
-        }
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.85;
+        transform: scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
 
-        /* Градиентные пятна */
-        .bg-blobs {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .bg-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(130px);
-            opacity: 0.07;
-            animation: floatBlob 20s ease-in-out infinite;
-        }
-        .bg-blob:nth-child(1) {
-            width: 600px;
-            height: 600px;
-            background: var(--accent-neon-pink);
-            top: -200px;
-            left: -100px;
-            animation-delay: 0s;
-            animation-duration: 22s;
-        }
-        .bg-blob:nth-child(2) {
-            width: 500px;
-            height: 500px;
-            background: var(--accent-electric-blue);
-            bottom: -150px;
-            right: -100px;
-            animation-delay: -7s;
-            animation-duration: 25s;
-        }
-        .bg-blob:nth-child(3) {
-            width: 400px;
-            height: 400px;
-            background: var(--accent-purple);
-            top: 50%;
-            left: 50%;
-            animation-delay: -14s;
-            animation-duration: 18s;
-        }
-        .bg-blob:nth-child(4) {
-            width: 350px;
-            height: 350px;
-            background: var(--accent-acid-green);
-            bottom: 30%;
-            left: 5%;
-            animation-delay: -3s;
-            animation-duration: 28s;
-        }
+    /* Лучи */
+    .rays {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
 
-        @keyframes floatBlob {
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-            25% {
-                transform: translate(120px, -80px) scale(1.15);
-            }
-            50% {
-                transform: translate(-60px, 100px) scale(0.9);
-            }
-            75% {
-                transform: translate(-130px, -40px) scale(1.1);
-            }
-        }
+    .ray {
+      position: absolute;
+      top: -10%;
+      right: -10%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        135deg,
+        transparent 0%,
+        rgba(234, 179, 8, 0.04) 20%,
+        rgba(234, 179, 8, 0.07) 25%,
+        transparent 30%,
+        transparent 45%,
+        rgba(150, 200, 255, 0.04) 50%,
+        rgba(150, 200, 255, 0.07) 55%,
+        transparent 60%
+      );
+      transform-origin: top right;
+      animation: rayMove 12s linear infinite;
+    }
 
-        /* Кастомный курсор */
-        .cursor-outer {
-            position: fixed;
-            width: var(--cursor-size);
-            height: var(--cursor-size);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-            transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-            mix-blend-mode: difference;
-        }
-        .cursor-inner {
-            position: fixed;
-            width: var(--cursor-dot);
-            height: var(--cursor-dot);
-            background: #fff;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10001;
-            transform: translate(-50%, -50%);
-            transition: transform 0.08s ease-out;
-        }
-        .cursor-outer.hover {
-            width: 50px;
-            height: 50px;
-            border-color: var(--accent-neon-pink);
-            background: rgba(255, 45, 120, 0.1);
-            mix-blend-mode: normal;
-        }
-        .cursor-outer.hover-blue {
-            border-color: var(--accent-electric-blue);
-            background: rgba(0, 212, 255, 0.1);
-        }
-        .cursor-outer.hover-green {
-            border-color: var(--accent-acid-green);
-            background: rgba(167, 245, 66, 0.1);
-        }
-        .cursor-outer.hover-gold {
-            border-color: var(--accent-gold);
-            background: rgba(255, 184, 0, 0.1);
-        }
+    .ray:nth-child(2) {
+      transform: rotate(15deg) scale(0.8);
+      animation-duration: 15s;
+      animation-delay: -3s;
+      opacity: 0.6;
+    }
 
-        /* Плавный скролл */
-        html {
-            scroll-behavior: smooth;
-        }
+    .ray:nth-child(3) {
+      transform: rotate(-10deg) scale(1.2);
+      animation-duration: 18s;
+      animation-delay: -6s;
+      opacity: 0.4;
+    }
 
-        /* Кастомный скроллбар */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-subtle);
-            border-radius: 10px;
-        }
+    .ray:nth-child(4) {
+      transform: rotate(25deg) scale(0.9);
+      animation-duration: 14s;
+      animation-delay: -2s;
+      opacity: 0.5;
+    }
 
-        /* Контейнер */
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 0 24px;
-            position: relative;
-            z-index: 1;
-        }
+    @keyframes rayMove {
+      0% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.2;
+      }
+      25% {
+        opacity: 0.7;
+      }
+      50% {
+        transform: rotate(5deg) scale(1.1);
+        opacity: 0.4;
+      }
+      75% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 0.2;
+      }
+    }
 
-        /* Шапка */
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(10, 10, 11, 0.78);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 16px 0;
-            transition: all var(--transition-smooth);
-        }
-        .header-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 1.7rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            background: linear-gradient(135deg, var(--accent-neon-pink), var(--accent-electric-blue), var(--accent-acid-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: logoShift 6s ease-in-out infinite;
-            background-size: 200% 200%;
-            position: relative;
-            text-shadow: none;
-            filter: drop-shadow(0 0 18px rgba(255, 45, 120, 0.3));
-        }
-        @keyframes logoShift {
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-            25% {
-                background-position: 100% 0%;
-            }
-            50% {
-                background-position: 100% 100%;
-            }
-            75% {
-                background-position: 0% 100%;
-            }
-        }
+    /* Звёзды */
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-        .nav-links {
-            display: flex;
-            gap: 28px;
-            list-style: none;
-        }
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            position: relative;
-            padding: 4px 0;
-            transition: color var(--transition-smooth);
-            cursor: none !important;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            border-radius: 2px;
-            transition: width var(--transition-smooth);
-        }
-        .nav-links a:nth-child(1):hover::after {
-            width: 100%;
-            background: var(--accent-neon-pink);
-        }
-        .nav-links a:nth-child(2):hover::after {
-            width: 100%;
-            background: var(--accent-electric-blue);
-        }
-        .nav-links a:nth-child(3):hover::after {
-            width: 100%;
-            background: var(--accent-acid-green);
-        }
-        .nav-links a:hover {
-            color: var(--text-primary);
-        }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: white;
+      animation: twinkle 3s ease-in-out infinite alternate;
+    }
 
-        .burger {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: none !important;
-            z-index: 101;
-        }
-        .burger span {
-            width: 26px;
-            height: 2px;
-            background: var(--text-primary);
-            border-radius: 2px;
-            transition: all var(--transition-smooth);
-        }
-        .burger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-        .burger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .burger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(5px, -5px);
-        }
+    @keyframes twinkle {
+      0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
 
-        /* Переключатель режима */
-        .mode-toggle {
-            position: relative;
-            width: 48px;
-            height: 26px;
-            background: var(--border-subtle);
-            border-radius: 13px;
-            cursor: none !important;
-            transition: background var(--transition-smooth);
-            flex-shrink: 0;
-            margin-left: 16px;
-        }
-        .mode-toggle::after {
-            content: '🌙';
-            position: absolute;
-            top: 2px;
-            left: 3px;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #1a1a1d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            transition: all var(--transition-smooth);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-        }
-        .mode-toggle.active {
-            background: rgba(0, 212, 255, 0.2);
-        }
-        .mode-toggle.active::after {
-            content: '🌆';
-            left: 23px;
-        }
+    /* Затемнение */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 15, 26, 0.4);
+      z-index: 1;
+      pointer-events: none;
+    }
 
-        /* Секции — перелистывание */
-        .section {
-            padding: 80px 0;
-            opacity: 0;
-            transform: rotateY(8deg) translateZ(-30px) translateY(30px);
-            transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
-            transform-style: preserve-3d;
-            perspective: 1000px;
-        }
-        .section.visible {
-            opacity: 1;
-            transform: rotateY(0deg) translateZ(0) translateY(0);
-        }
+    /* Контейнер с контентом */
+    .content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      padding: 2rem;
+    }
 
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            margin-bottom: 8px;
-            position: relative;
-            display: inline-block;
-            text-shadow: 3px 3px 0px rgba(255, 45, 120, 0.15), -2px -2px 0px rgba(0, 212, 255, 0.1);
-        }
-        .section-subtitle {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-bottom: 40px;
-            font-weight: 400;
-        }
+    /* Анимированный текст - в одну строку */
+    .animated-text {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+    }
 
-        /* Стеклянные карточки */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
+    .word {
+      display: inline-block;
+      font-size: clamp(2.5rem, 8vw, 5.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      text-shadow: 0 0 40px rgba(234, 179, 8, 0.15);
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(-50px);
+      animation: blurReveal 0.35s ease forwards;
+      animation-delay: var(--delay);
+      white-space: nowrap;
+    }
 
-        .card {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 28px 24px;
-            transition: all var(--transition-bounce);
-            cursor: none !important;
-            position: relative;
-            overflow: hidden;
-            transform-style: preserve-3d;
-            perspective: 800px;
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            z-index: 2;
-        }
-        .card:hover {
-            transform: translateY(-6px);
-            border-color: var(--border-hover);
-            box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.5);
-        }
-        .card.pink::before {
-            background: var(--accent-neon-pink);
-        }
-        .card.blue::before {
-            background: var(--accent-electric-blue);
-        }
-        .card.green::before {
-            background: var(--accent-acid-green);
-        }
-        .card.gold::before {
-            background: var(--accent-gold);
-        }
-        .card.purple::before {
-            background: var(--accent-purple);
-        }
+    .word:nth-child(1) { --delay: 0s; }
+    .word:nth-child(2) { --delay: 0.15s; }
+    .word:nth-child(3) { --delay: 0.30s; }
 
-        /* Блик от мыши */
-        .glow-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            border-radius: var(--radius-lg);
-        }
-        .card:hover .glow-effect,
-        .hero-card:hover .glow-effect,
-        .interview-block:hover .glow-effect,
-        .event-item:hover .glow-effect {
-            opacity: 1;
-        }
+    @keyframes blurReveal {
+      0% {
+        opacity: 0;
+        filter: blur(10px);
+        transform: translateY(-50px);
+      }
+      40% {
+        opacity: 0.5;
+        filter: blur(5px);
+        transform: translateY(-5px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0px);
+        transform: translateY(0);
+      }
+    }
 
-        .card-icon {
-            font-size: 2rem;
-            margin-bottom: 16px;
-            position: relative;
-            z-index: 2;
-        }
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
-            position: relative;
-            z-index: 2;
-        }
-        .card-text {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            position: relative;
-            z-index: 2;
-        }
-        .card-meta {
-            display: flex;
-            gap: 16px;
-            margin-top: 16px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            position: relative;
-            z-index: 2;
-        }
-        .card-meta span {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    /* Основной текст */
+    .main-text {
+      font-size: clamp(1rem, 1.8vw, 1.3rem);
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 1.5rem;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+      animation-delay: 0.8s;
+    }
 
-        /* Стикеры */
-        .sticker {
-            position: absolute;
-            z-index: 10;
-            padding: 6px 14px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            border-radius: 4px;
-            transform: rotate(-3deg);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease;
-            cursor: grab;
-            user-select: none;
-        }
-        .sticker:active {
-            cursor: grabbing;
-        }
-        .sticker.new {
-            top: -10px;
-            right: 16px;
-            background: var(--accent-neon-pink);
-            color: #fff;
-        }
-        .sticker.hot {
-            top: 20px;
-            right: -8px;
-            background: var(--accent-gold);
-            color: #000;
-            transform: rotate(5deg);
-        }
-        .sticker.exclusive {
-            top: -10px;
-            left: 16px;
-            background: var(--accent-purple);
-            color: #fff;
-            transform: rotate(-5deg);
-        }
-        .card:hover .sticker {
-            transform: rotate(0deg) scale(1.05);
-        }
-        .card:active .sticker {
-            transform: rotate(0deg) scale(0.95);
-        }
+    .main-text .highlight {
+      color: #eab308;
+      font-weight: 600;
+      background: rgba(234, 179, 8, 0.1);
+      padding: 0.1rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(234, 179, 8, 0.15);
+    }
 
-        /* Топ-трек — крупная карточка */
-        .hero-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 40px 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            position: relative;
-            overflow: hidden;
-            transition: all var(--transition-bounce);
-            cursor: none !important;
-            transform-style: preserve-3d;
-            perspective: 800px;
-        }
-        .hero-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 45, 120, 0.12) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        .hero-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-4px);
-            box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
-        }
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 184, 0, 0.12);
-            color: var(--accent-gold);
-            font-weight: 700;
-            font-size: 0.8rem;
-            padding: 6px 14px;
-            border-radius: 20px;
-            width: fit-content;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            position: relative;
-            z-index: 2;
-        }
-        .hero-title {
-            font-size: 2rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.2;
-            position: relative;
-            z-index: 2;
-            text-shadow: 2px 2px 0px rgba(255, 45, 120, 0.2);
-        }
-        .hero-artist {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            position: relative;
-            z-index: 2;
-        }
-        .hero-stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            position: relative;
-            z-index: 2;
-        }
-        .stat {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s ease;
-        }
-        .stat-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .stat-value.pink {
-            color: var(--accent-neon-pink);
-        }
-        .stat-value.blue {
-            color: var(--accent-electric-blue);
-        }
-        .stat-value.green {
-            color: var(--accent-acid-green);
-        }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-        /* Аудиоволна */
-        .audio-wave {
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 40px;
-            position: relative;
-            z-index: 2;
-            margin-top: 4px;
-        }
-        .audio-wave .bar {
-            width: 4px;
-            border-radius: 2px;
-            transition: height 0.15s ease;
-        }
-        .audio-wave .bar:nth-child(odd) {
-            background: var(--accent-neon-pink);
-        }
-        .audio-wave .bar:nth-child(even) {
-            background: var(--accent-electric-blue);
-        }
-        .audio-wave.playing .bar {
-            animation: waveJump 0.6s ease-in-out infinite;
-        }
-        .audio-wave.playing .bar:nth-child(1) {
-            animation-delay: 0s;
-        }
-        .audio-wave.playing .bar:nth-child(2) {
-            animation-delay: 0.08s;
-        }
-        .audio-wave.playing .bar:nth-child(3) {
-            animation-delay: 0.16s;
-        }
-        .audio-wave.playing .bar:nth-child(4) {
-            animation-delay: 0.24s;
-        }
-        .audio-wave.playing .bar:nth-child(5) {
-            animation-delay: 0.32s;
-        }
-        .audio-wave.playing .bar:nth-child(6) {
-            animation-delay: 0.4s;
-        }
-        .audio-wave.playing .bar:nth-child(7) {
-            animation-delay: 0.48s;
-        }
-        .audio-wave.playing .bar:nth-child(8) {
-            animation-delay: 0.56s;
-        }
-        @keyframes waveJump {
-            0%,
-            100% {
-                height: 6px;
-            }
-            40% {
-                height: 30px;
-            }
-            70% {
-                height: 12px;
-            }
-        }
+    /* Разделитель */
+    .divider {
+      width: 100px;
+      height: 2px;
+      margin: 1.5rem auto 0;
+      background: linear-gradient(90deg, transparent, rgba(234, 179, 8, 0.3), transparent);
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 1s;
+    }
 
-        .play-btn {
-            position: relative;
-            z-index: 2;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 2px solid var(--text-secondary);
-            background: transparent;
-            color: var(--text-primary);
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: none !important;
-            transition: all var(--transition-smooth);
-            flex-shrink: 0;
-        }
-        .play-btn:hover {
-            border-color: var(--accent-neon-pink);
-            color: var(--accent-neon-pink);
-            box-shadow: 0 0 24px rgba(255, 45, 120, 0.3);
-        }
-        .play-btn.playing {
-            border-color: var(--accent-neon-pink);
-            background: rgba(255, 45, 120, 0.1);
-        }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
 
-        .hero-bottom {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            position: relative;
-            z-index: 2;
-        }
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      .animated-text {
+        gap: 0.15rem;
+      }
+      .word {
+        font-size: clamp(2rem, 7vw, 3.5rem);
+      }
+      .main-text {
+        font-size: 0.95rem;
+        padding: 0 0.5rem;
+      }
+    }
 
-        /* Интервью */
-        .interview-block {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 36px 28px;
-            display: flex;
-            gap: 28px;
-            align-items: flex-start;
-            transition: all var(--transition-bounce);
-            position: relative;
-            cursor: none !important;
-            transform-style: preserve-3d;
-            perspective: 800px;
-        }
-        .interview-block:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-4px);
-            box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.5);
-        }
-        .interview-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-neon-pink));
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 8px 30px rgba(180, 77, 255, 0.3);
-        }
-        .interview-content {
-            flex: 1;
-            position: relative;
-            z-index: 2;
-        }
-        .interview-name {
-            font-weight: 700;
-            font-size: 1.15rem;
-            margin-bottom: 4px;
-        }
-        .interview-role {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-        .qa {
-            margin-bottom: 16px;
-        }
-        .qa-question {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-        }
-        .qa-question::before {
-            content: '— ';
-            color: var(--accent-purple);
-            font-weight: 700;
-        }
-        .qa-answer {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            padding-left: 16px;
-        }
-        .blog-note {
-            margin-top: 20px;
-            padding: 14px 18px;
-            border-left: 3px solid var(--accent-neon-pink);
-            background: rgba(255, 45, 120, 0.05);
-            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            font-style: italic;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Афиша */
-        .event-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .event-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 18px 22px;
-            transition: all var(--transition-bounce);
-            cursor: none !important;
-            position: relative;
-            transform-style: preserve-3d;
-            perspective: 800px;
-        }
-        .event-item:hover {
-            border-color: var(--border-hover);
-            transform: translateX(6px);
-            box-shadow: 0 12px 40px -15px rgba(0, 0, 0, 0.5);
-        }
-        .event-date {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-width: 60px;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-        .event-day {
-            font-size: 1.6rem;
-            font-weight: 800;
-            line-height: 1;
-            font-family: 'Courier New', monospace;
-        }
-        .event-month {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted);
-        }
-        .event-info {
-            flex: 1;
-            position: relative;
-            z-index: 2;
-        }
-        .event-name {
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 2px;
-        }
-        .event-venue {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        .event-tag {
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
-            position: relative;
-            z-index: 2;
-        }
-        .tag-concert {
-            background: rgba(255, 45, 120, 0.15);
-            color: var(--accent-neon-pink);
-        }
-        .tag-party {
-            background: rgba(0, 212, 255, 0.15);
-            color: var(--accent-electric-blue);
-        }
-        .tag-auto {
-            background: rgba(167, 245, 66, 0.15);
-            color: var(--accent-acid-green);
-        }
-        .tag-fest {
-            background: rgba(255, 184, 0, 0.15);
-            color: var(--accent-gold);
-        }
-
-        /* Интерактивная карта */
-        .map-container {
-            position: relative;
-            width: 100%;
-            height: 280px;
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            margin-bottom: 28px;
-            overflow: hidden;
-            cursor: none !important;
-        }
-        .map-svg {
-            width: 100%;
-            height: 100%;
-        }
-        .map-city {
-            fill: rgba(255, 255, 255, 0.03);
-            stroke: rgba(255, 255, 255, 0.1);
-            stroke-width: 1;
-            transition: fill 0.4s ease;
-        }
-        .map-city:hover {
-            fill: rgba(255, 255, 255, 0.06);
-        }
-        .map-dot {
-            fill: var(--accent-neon-pink);
-            stroke: none;
-            animation: pulseDot 2s ease-in-out infinite;
-            cursor: none !important;
-            transition: r 0.3s ease;
-        }
-        .map-dot:hover {
-            r: 8;
-        }
-        .map-dot.blue {
-            fill: var(--accent-electric-blue);
-            animation-delay: -0.5s;
-        }
-        .map-dot.green {
-            fill: var(--accent-acid-green);
-            animation-delay: -1s;
-        }
-        .map-dot.gold {
-            fill: var(--accent-gold);
-            animation-delay: -1.5s;
-        }
-        @keyframes pulseDot {
-            0%,
-            100% {
-                r: 5;
-                opacity: 1;
-            }
-            50% {
-                r: 10;
-                opacity: 0.4;
-            }
-        }
-        .map-tooltip {
-            position: absolute;
-            background: rgba(24, 24, 27, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-hover);
-            border-radius: var(--radius-sm);
-            padding: 10px 14px;
-            font-size: 0.8rem;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.25s ease;
-            z-index: 5;
-            white-space: nowrap;
-            color: var(--text-primary);
-        }
-        .map-tooltip.visible {
-            opacity: 1;
-        }
-
-        /* Декоративные линии */
-        .decorative-lines {
-            position: absolute;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.15;
-        }
-        .decorative-lines svg {
-            width: 100%;
-            height: 100%;
-        }
-        .decorative-lines line {
-            stroke: var(--text-muted);
-            stroke-width: 0.5;
-            stroke-dasharray: 8 4;
-        }
-
-        /* Закладки-стикеры в углу */
-        .saved-stickers {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column-reverse;
-            gap: 6px;
-            pointer-events: none;
-        }
-        .saved-sticker {
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #fff;
-            background: var(--accent-neon-pink);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: auto;
-            cursor: none !important;
-            transform: rotate(-2deg);
-        }
-        @keyframes popIn {
-            from {
-                transform: scale(0) rotate(-15deg);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1) rotate(-2deg);
-                opacity: 1;
-            }
-        }
-
-        /* Режим ночного города */
-        .city-lights {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .city-lights.active {
-            opacity: 1;
-        }
-        .city-light {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #fff;
-            border-radius: 50%;
-            animation: twinkle 3s ease-in-out infinite;
-        }
-        @keyframes twinkle {
-            0%,
-            100% {
-                opacity: 0.2;
-            }
-            50% {
-                opacity: 0.9;
-            }
-        }
-        .rain-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 1s ease;
-            background: repeating-linear-gradient(0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(255, 255, 255, 0.01) 2px,
-                    rgba(255, 255, 255, 0.01) 3px);
-        }
-        .rain-overlay.active {
-            opacity: 1;
-        }
-
-        /* Подвал */
-        .footer {
-            border-top: 1px solid var(--border-subtle);
-            padding: 32px 0;
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            position: relative;
-            z-index: 1;
-        }
-        .footer-accent {
-            background: linear-gradient(135deg, var(--accent-neon-pink), var(--accent-electric-blue), var(--accent-acid-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
-        }
-
-        /* Медиа */
-        @media (max-width: 768px) {
-            .header-inner {
-                flex-wrap: wrap;
-            }
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                gap: 12px;
-                padding-top: 16px;
-            }
-            .nav-links.active {
-                display: flex;
-            }
-            .burger {
-                display: flex;
-            }
-            .section {
-                padding: 48px 0;
-            }
-            .section-title {
-                font-size: 1.6rem;
-            }
-            .hero-card {
-                padding: 24px 20px;
-            }
-            .hero-title {
-                font-size: 1.4rem;
-            }
-            .hero-stats {
-                gap: 16px;
-            }
-            .stat-value {
-                font-size: 1.3rem;
-            }
-            .interview-block {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .qa-answer {
-                padding-left: 0;
-            }
-            .blog-note {
-                text-align: left;
-            }
-            .event-item {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            .map-container {
-                height: 200px;
-            }
-            .sticker.new,
-            .sticker.hot,
-            .sticker.exclusive {
-                display: none;
-            }
-            .cursor-outer,
-            .cursor-inner {
-                display: none;
-            }
-            * {
-                cursor: auto !important;
-            }
-        }
-    </style>
+    @media (max-width: 480px) {
+      .animated-text {
+        gap: 0.1rem;
+      }
+      .word {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+      }
+      .main-text {
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Фон -->
+  <div class="bg-animation"></div>
+  
+  <!-- Лучи -->
+  <div class="rays">
+    <div class="ray"></div>
+    <div class="ray"></div>
+    <div class="ray"></div>
+    <div class="ray"></div>
+  </div>
 
-    <!-- Шумовой фон -->
-    <div class="noise-overlay"></div>
+  <!-- Звёзды -->
+  <div class="stars" id="stars"></div>
 
-    <!-- Градиентные пятна -->
-    <div class="bg-blobs">
-        <div class="bg-blob"></div>
-        <div class="bg-blob"></div>
-        <div class="bg-blob"></div>
-        <div class="bg-blob"></div>
+  <!-- Затемнение -->
+  <div class="overlay"></div>
+
+  <!-- Контент -->
+  <div class="content">
+    <!-- Анимированный текст в одну строку -->
+    <div class="animated-text">
+      <span class="word">FRESHMAN</span>
+      <span class="word">MEDIA</span>
+      <span class="word">GROUP</span>
     </div>
 
-    <!-- Режим ночного города -->
-    <div class="city-lights" id="cityLights"></div>
-    <div class="rain-overlay" id="rainOverlay"></div>
+    <div class="divider"></div>
 
-    <!-- Кастомный курсор -->
-    <div class="cursor-outer" id="cursorOuter"></div>
-    <div class="cursor-inner" id="cursorInner"></div>
+    <!-- Информация об обновлении -->
+    <div class="main-text">
+      Сайт находится на этапе <span class="highlight">глобального обновления</span>.<br>
+      В скором времени будет анонс новой версии.
+    </div>
+  </div>
 
-    <!-- Сохранённые стикеры -->
-    <div class="saved-stickers" id="savedStickers"></div>
-
-    <!-- Шапка -->
-    <header class="header" id="header">
-        <div class="container header-inner">
-            <div class="logo">ФРЕШМЕН</div>
-            <div class="burger" id="burger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#top-track">🎵 Топ трека</a></li>
-                <li><a href="#interview">🎤 Интервью</a></li>
-                <li><a href="#events">📅 Афиша</a></li>
-            </ul>
-            <div class="mode-toggle" id="modeToggle" title="Режим ночного города"></div>
-        </div>
-    </header>
-
-    <main class="container">
-
-        <!-- Топ-1 трек недели -->
-        <section class="section" id="top-track">
-            <h2 class="section-title">Топ-1 трек недели</h2>
-            <p class="section-subtitle">Выбор «ФРЕШМЕНА» — то, что звучит из каждого окна Сан-Андреаса</p>
-
-            <div class="hero-card" id="heroCard">
-                <div class="glow-effect"></div>
-                <div class="sticker hot">HOT</div>
-                <div class="hero-badge">🏆 #1 в чарте</div>
-                <div class="hero-title">«Ночной Патруль»</div>
-                <div class="hero-artist">Исполнитель: MC Лоурайдер & DJ Побережье</div>
-                <div class="hero-stats">
-                    <div class="stat">
-                        <span class="stat-value pink" data-target="47">0</span>
-                        <span class="stat-label">Ротаций на радио</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value blue" data-target="12">0</span>
-                        <span class="stat-label">Клубов играли</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value green" data-target="84">0</span>
-                        <span class="stat-label">Копий продано</span>
-                    </div>
-                </div>
-                <div class="hero-bottom">
-                    <button class="play-btn" id="playBtn" aria-label="Play preview">▶</button>
-                    <div class="audio-wave" id="audioWave">
-                        <div class="bar" style="height:8px"></div>
-                        <div class="bar" style="height:18px"></div>
-                        <div class="bar" style="height:6px"></div>
-                        <div class="bar" style="height:28px"></div>
-                        <div class="bar" style="height:12px"></div>
-                        <div class="bar" style="height:22px"></div>
-                        <div class="bar" style="height:6px"></div>
-                        <div class="bar" style="height:14px"></div>
-                    </div>
-                </div>
-                <div class="card-meta">
-                    <span>📀 Лейбл: Ghetto Records</span>
-                    <span>🎧 Продюсер: BeatMaker_X</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Интервью и блог -->
-        <section class="section" id="interview">
-            <h2 class="section-title">Интервью & Блог</h2>
-            <p class="section-subtitle">Герои сцены, владельцы площадок и голоса улиц</p>
-
-            <div class="interview-block" id="interviewBlock">
-                <div class="glow-effect"></div>
-                <div class="sticker exclusive">ЭКСКЛЮЗИВ</div>
-                <div class="interview-avatar">🎙️</div>
-                <div class="interview-content">
-                    <div class="interview-name">DJ Побережье</div>
-                    <div class="interview-role">Резидент клуба «Alhambra», Лос-Сантос</div>
-                    <div class="qa">
-                        <div class="qa-question">Как родился трек «Ночной Патруль»?</div>
-                        <div class="qa-answer">Мы с MC Лоурайдером засели в студии в три часа ночи после его сета в Идлвуде. Бит написался за полчаса, текст — ещё быстрее. Это чистый поток.</div>
-                    </div>
-                    <div class="qa">
-                        <div class="qa-question">Слухи о конфликте с Ghetto Records?</div>
-                        <div class="qa-answer">Никакого конфликта. Просто мы хотим двигаться дальше. Ghetto — наш дом, но пришло время расширять карту.</div>
-                    </div>
-                    <div class="qa">
-                        <div class="qa-question">Что дальше?</div>
-                        <div class="qa-answer">Готовим совместный мини-альбом. Будет больше живых инструментов и пара неожиданных фитов. Следите за афишей.</div>
-                    </div>
-                    <div class="blog-note">
-                        <strong>📝 Блог редакции:</strong> Честно скажем — DJ Побережье звучит уверенно, но мы ждали больше конкретики по поводу ухода с Ghetto Records. Следим за развитием.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Афиша -->
-        <section class="section" id="events">
-            <h2 class="section-title">Афиша</h2>
-            <p class="section-subtitle">Куда идти, что слушать, где быть на этой неделе в Сан-Андреасе</p>
-
-            <!-- Интерактивная карта -->
-            <div class="map-container" id="mapContainer">
-                <svg class="map-svg" viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Лос-Сантос -->
-                    <ellipse class="map-city" cx="180" cy="180" rx="140" ry="80" />
-                    <text x="180" y="175" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-weight="600">Лос-Сантос</text>
-                    <!-- Сан-Фиерро -->
-                    <ellipse class="map-city" cx="620" cy="80" rx="110" ry="60" />
-                    <text x="620" y="75" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-weight="600">Сан-Фиерро</text>
-                    <!-- Лас-Вентурас -->
-                    <ellipse class="map-city" cx="460" cy="210" rx="100" ry="55" />
-                    <text x="460" y="205" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-weight="600">Лас-Вентурас</text>
-                    <!-- Округа -->
-                    <ellipse class="map-city" cx="350" cy="140" rx="180" ry="90" />
-                    <text x="350" y="155" text-anchor="middle" fill="rgba(255,255,255,0.25)" font-size="10" font-weight="500">Округ Боун</text>
-
-                    <!-- Точки событий -->
-                    <circle class="map-dot" cx="140" cy="170" r="5" data-event="Баттл «Слово улиц» — Alhambra" />
-                    <circle class="map-dot blue" cx="210" cy="140" r="5" data-event="Вечер лоурайдеров — Вердант Блаффс" />
-                    <circle class="map-dot green" cx="500" cy="230" r="5" data-event="DJ-сет «Электро-Вентурас» — Jizzy's" />
-                    <circle class="map-dot gold" cx="300" cy="100" r="5" data-event="Рок-опен-эйр — ранчо «Кактус»" />
-                    <circle class="map-dot" cx="600" cy="100" r="5" data-event="Кастинг танцовщиц — Pig Pen" />
-                </svg>
-                <div class="map-tooltip" id="mapTooltip"></div>
-            </div>
-
-            <div class="event-list">
-                <div class="event-item">
-                    <div class="glow-effect"></div>
-                    <div class="event-date">
-                        <span class="event-day">22</span>
-                        <span class="event-month">Мая, Сб</span>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">Баттл «Слово улиц»</div>
-                        <div class="event-venue">Клуб Alhambra, Идлвуд, Лос-Сантос · 21:00</div>
-                    </div>
-                    <span class="event-tag tag-concert">Концерт</span>
-                </div>
-                <div class="event-item">
-                    <div class="glow-effect"></div>
-                    <div class="event-date">
-                        <span class="event-day">23</span>
-                        <span class="event-month">Мая, Вс</span>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">Вечер лоурайдеров</div>
-                        <div class="event-venue">Вердант Блаффс, Лос-Сантос · 19:00</div>
-                    </div>
-                    <span class="event-tag tag-auto">Авто-сходка</span>
-                </div>
-                <div class="event-item">
-                    <div class="glow-effect"></div>
-                    <div class="event-date">
-                        <span class="event-day">25</span>
-                        <span class="event-month">Мая, Вт</span>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">DJ-сет «Электро-Вентурас»</div>
-                        <div class="event-venue">Jizzy's, Лас-Вентурас · 22:00</div>
-                    </div>
-                    <span class="event-tag tag-party">Вечеринка</span>
-                </div>
-                <div class="event-item">
-                    <div class="glow-effect"></div>
-                    <div class="event-date">
-                        <span class="event-day">27</span>
-                        <span class="event-month">Мая, Чт</span>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">Рок-опен-эйр в пустыне</div>
-                        <div class="event-venue">Округ Боун, ранчо «Кактус» · 18:00</div>
-                    </div>
-                    <span class="event-tag tag-fest">Фестиваль</span>
-                </div>
-                <div class="event-item">
-                    <div class="glow-effect"></div>
-                    <div class="event-date">
-                        <span class="event-day">29</span>
-                        <span class="event-month">Мая, Сб</span>
-                    </div>
-                    <div class="event-info">
-                        <div class="event-name">Кастинг танцовщиц</div>
-                        <div class="event-venue">Клуб Pig Pen, Сан-Фиерро · 15:00</div>
-                    </div>
-                    <span class="event-tag tag-party">Кастинг</span>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>© 2026 <span class="footer-accent">ФРЕШМЕН</span> · Музыкальный журнал Сан-Андреаса</p>
-            <p style="margin-top:6px;">Лос-Сантос · Сан-Фиерро · Лас-Вентурас · Округа</p>
-            <p style="margin-top:6px;font-size:0.75rem;">Твой голос. Твой ритм. Твоя улица.</p>
-        </div>
-    </footer>
-
-    <script>
-        // ==================== КАСТОМНЫЙ КУРСОР ====================
-        const cursorOuter = document.getElementById('cursorOuter');
-        const cursorInner = document.getElementById('cursorInner');
-        let mouseX = 0,
-            mouseY = 0;
-        let outerX = 0,
-            outerY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            cursorInner.style.left = mouseX + 'px';
-            cursorInner.style.top = mouseY + 'px';
-        });
-
-        function animateCursor() {
-            outerX += (mouseX - outerX) * 0.15;
-            outerY += (mouseY - outerY) * 0.15;
-            cursorOuter.style.left = outerX + 'px';
-            cursorOuter.style.top = outerY + 'px';
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Hover-эффекты курсора
-        const hoverTargets = document.querySelectorAll(
-            'a, button, .card, .hero-card, .interview-block, .event-item, .sticker, .map-dot, .burger, .mode-toggle, .play-btn');
-        hoverTargets.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                let hoverClass = 'hover';
-                if (el.closest('.interview-block')) hoverClass = 'hover';
-                else if (el.closest('#events') || el.classList.contains('map-dot')) hoverClass =
-                    'hover-green';
-                else if (el.classList.contains('hero-card') || el.closest('#top-track')) hoverClass =
-                    'hover';
-                else if (el.classList.contains('event-item') && el.querySelector('.tag-gold')) hoverClass =
-                    'hover-gold';
-                cursorOuter.classList.add(hoverClass);
-            });
-            el.addEventListener('mouseleave', () => {
-                cursorOuter.classList.remove('hover', 'hover-blue', 'hover-green', 'hover-gold');
-            });
-        });
-
-        // ==================== БУРГЕР-МЕНЮ ====================
-        const burger = document.getElementById('burger');
-        const navLinks = document.getElementById('navLinks');
-        burger.addEventListener('click', () => {
-            burger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                burger.classList.remove('active');
-                navLinks.classList.remove('active');
-            });
-        });
-
-        // ==================== АНИМАЦИЯ СЕКЦИЙ (перелистывание) ====================
-        const sections = document.querySelectorAll('.section');
-        const sectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    // Запуск счётчиков при появлении секции топ-трека
-                    if (entry.target.id === 'top-track') {
-                        setTimeout(startCounters, 300);
-                    }
-                }
-            });
-        }, { threshold: 0.2, rootMargin: '0px 0px -50px 0px' });
-        sections.forEach(section => sectionObserver.observe(section));
-
-        // ==================== СЧЁТЧИКИ СТАТИСТИКИ ====================
-        function startCounters() {
-            const statValues = document.querySelectorAll('.stat-value[data-target]');
-            statValues.forEach(stat => {
-                const target = parseInt(stat.getAttribute('data-target'));
-                const duration = 1500;
-                const startTime = performance.now();
-                const startVal = 0;
-
-                function update(now) {
-                    const elapsed = now - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    const eased = 1 - Math.pow(1 - progress, 3);
-                    stat.textContent = Math.floor(startVal + (target - startVal) * eased);
-                    if (progress < 1) {
-                        requestAnimationFrame(update);
-                    } else {
-                        stat.textContent = target;
-                    }
-                }
-                requestAnimationFrame(update);
-            });
-        }
-
-        // ==================== АУДИОПЛЕЕР-ПРЕВЬЮ ====================
-        const playBtn = document.getElementById('playBtn');
-        const audioWave = document.getElementById('audioWave');
-        let isPlaying = false;
-        let audioCtx = null;
-        let oscillator = null;
-        let gainNode = null;
-
-        playBtn.addEventListener('click', () => {
-            if (!isPlaying) {
-                // Создаём синтезированный звук (заглушка вместо реального аудиофайла)
-                try {
-                    audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-                    oscillator = audioCtx.createOscillator();
-                    gainNode = audioCtx.createGain();
-                    oscillator.type = 'sawtooth';
-                    oscillator.frequency.setValueAtTime(80, audioCtx.currentTime);
-                    oscillator.frequency.linearRampToValueAtTime(160, audioCtx.currentTime + 0.5);
-                    oscillator.frequency.linearRampToValueAtTime(120, audioCtx.currentTime + 1);
-                    gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(0.03, audioCtx.currentTime + 1.5);
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioCtx.destination);
-                    oscillator.start();
-                } catch (e) {
-                    console.log('Audio not supported');
-                }
-
-                isPlaying = true;
-                playBtn.textContent = '⏸';
-                playBtn.classList.add('playing');
-                audioWave.classList.add('playing');
-            } else {
-                if (oscillator) {
-                    oscillator.stop();
-                    oscillator = null;
-                }
-                if (audioCtx && audioCtx.state === 'running') {
-                    audioCtx.close();
-                    audioCtx = null;
-                }
-                isPlaying = false;
-                playBtn.textContent = '▶';
-                playBtn.classList.remove('playing');
-                audioWave.classList.remove('playing');
-            }
-        });
-
-        // ==================== БЛИК ОТ МЫШИ ====================
-        document.querySelectorAll('.glow-effect').forEach(glow => {
-            const parent = glow.parentElement;
-            parent.addEventListener('mousemove', (e) => {
-                const rect = parent.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const xPercent = (x / rect.width) * 100;
-                const yPercent = (y / rect.height) * 100;
-                glow.style.background =
-                    `radial-gradient(circle at ${xPercent}% ${yPercent}%, rgba(255,255,255,0.08) 0%, transparent 60%)`;
-            });
-            parent.addEventListener('mouseleave', () => {
-                glow.style.background = 'transparent';
-            });
-        });
-
-        // ==================== СТИКЕРЫ — ПЕРЕТАСКИВАНИЕ В ЗАКЛАДКИ ====================
-        const savedStickersContainer = document.getElementById('savedStickers');
-        document.querySelectorAll('.sticker').forEach(sticker => {
-            let isDragging = false;
-            let startX, startY, origX, origY;
-            let clone = null;
-
-            sticker.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                const rect = sticker.getBoundingClientRect();
-                origX = rect.left;
-                origY = rect.top;
-                clone = sticker.cloneNode(true);
-                clone.style.position = 'fixed';
-                clone.style.left = origX + 'px';
-                clone.style.top = origY + 'px';
-                clone.style.zIndex = '10002';
-                clone.style.pointerEvents = 'none';
-                clone.style.transform = 'rotate(0deg) scale(1.1)';
-                clone.style.transition = 'none';
-                document.body.appendChild(clone);
-                sticker.style.opacity = '0.4';
-                e.preventDefault();
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging || !clone) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-                clone.style.left = (origX + dx) + 'px';
-                clone.style.top = (origY + dy) + 'px';
-            });
-
-            document.addEventListener('mouseup', (e) => {
-                if (!isDragging) return;
-                isDragging = false;
-                if (clone) {
-                    const cloneRect = clone.getBoundingClientRect();
-                    const savedRect = savedStickersContainer.getBoundingClientRect();
-                    // Если перетащили в зону закладок
-                    if (cloneRect.right > savedRect.left &&
-                        cloneRect.left < savedRect.right &&
-                        cloneRect.bottom > savedRect.top &&
-                        cloneRect.top < savedRect.bottom) {
-                        const savedSticker = document.createElement('div');
-                        savedSticker.className = 'saved-sticker';
-                        savedSticker.textContent = sticker.textContent;
-                        savedSticker.title = 'Кликни чтобы убрать';
-                        savedSticker.addEventListener('click', () => {
-                            savedSticker.style.animation = 'popIn 0.3s ease reverse';
-                            setTimeout(() => savedSticker.remove(), 300);
-                        });
-                        savedStickersContainer.appendChild(savedSticker);
-                        // Автоудаление через 8 секунд
-                        setTimeout(() => {
-                            if (savedSticker.parentNode) {
-                                savedSticker.style.animation = 'popIn 0.3s ease reverse';
-                                setTimeout(() => savedSticker.remove(), 300);
-                            }
-                        }, 8000);
-                    }
-                    clone.remove();
-                    clone = null;
-                }
-                sticker.style.opacity = '1';
-            });
-        });
-
-        // ==================== ИНТЕРАКТИВНАЯ КАРТА ====================
-        const mapContainer = document.getElementById('mapContainer');
-        const mapTooltip = document.getElementById('mapTooltip');
-        const mapDots = document.querySelectorAll('.map-dot');
-
-        mapDots.forEach(dot => {
-            dot.addEventListener('mouseenter', (e) => {
-                const eventName = dot.getAttribute('data-event');
-                mapTooltip.textContent = eventName;
-                mapTooltip.classList.add('visible');
-            });
-            dot.addEventListener('mousemove', (e) => {
-                const rect = mapContainer.getBoundingClientRect();
-                mapTooltip.style.left = (e.clientX - rect.left + 16) + 'px';
-                mapTooltip.style.top = (e.clientY - rect.top - 40) + 'px';
-            });
-            dot.addEventListener('mouseleave', () => {
-                mapTooltip.classList.remove('visible');
-            });
-        });
-
-        // ==================== РЕЖИМ НОЧНОГО ГОРОДА ====================
-        const modeToggle = document.getElementById('modeToggle');
-        const cityLights = document.getElementById('cityLights');
-        const rainOverlay = document.getElementById('rainOverlay');
-        let nightMode = false;
-
-        // Генерируем огни города
-        function generateLights() {
-            for (let i = 0; i < 80; i++) {
-                const light = document.createElement('div');
-                light.className = 'city-light';
-                light.style.left = Math.random() * 100 + '%';
-                light.style.top = Math.random() * 100 + '%';
-                light.style.animationDelay = Math.random() * 4 + 's';
-                light.style.animationDuration = (2 + Math.random() * 3) + 's';
-                light.style.width = (1 + Math.random() * 3) + 'px';
-                light.style.height = light.style.width;
-                cityLights.appendChild(light);
-            }
-        }
-        generateLights();
-
-        modeToggle.addEventListener('click', () => {
-            nightMode = !nightMode;
-            modeToggle.classList.toggle('active', nightMode);
-            cityLights.classList.toggle('active', nightMode);
-            rainOverlay.classList.toggle('active', nightMode);
-        });
-
-        // ==================== ХЕДЕР — ТЕНЬ ПРИ СКРОЛЛЕ ====================
-        const header = document.getElementById('header');
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 80) {
-                header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.35)';
-            } else {
-                header.style.boxShadow = 'none';
-            }
-        });
-
-        // ==================== ДЕКОРАТИВНЫЕ ЛИНИИ ====================
-        function addDecorativeLines() {
-            const sectionsAll = document.querySelectorAll('.section');
-            sectionsAll.forEach(section => {
-                const linesDiv = document.createElement('div');
-                linesDiv.className = 'decorative-lines';
-                linesDiv.style.cssText = `
-                    position: absolute;
-                    top: 0;
-                    left: -40px;
-                    width: 120px;
-                    height: 100%;
-                    pointer-events: none;
-                    z-index: 0;
-                    opacity: 0.12;
-                `;
-                linesDiv.innerHTML = `
-                    <svg viewBox="0 0 120 400" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="0" y1="0" x2="100" y2="80" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="6 4"/>
-                        <line x1="20" y1="150" x2="100" y2="200" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="8 5"/>
-                        <line x1="10" y1="300" x2="90" y2="370" stroke="var(--text-muted)" stroke-width="0.5" stroke-dasharray="5 3"/>
-                        <circle cx="100" cy="80" r="2" fill="var(--accent-neon-pink)" opacity="0.5"/>
-                        <circle cx="100" cy="200" r="2" fill="var(--accent-electric-blue)" opacity="0.5"/>
-                    </svg>`;
-                section.style.position = 'relative';
-                section.appendChild(linesDiv);
-            });
-        }
-        addDecorativeLines();
-
-        console.log('🎵 ФРЕШМЕН — все 15 фич активированы!');
-        console.log('  ✓ Шумовой фон');
-        console.log('  ✓ Градиентные пятна');
-        console.log('  ✓ Типографика с тенью');
-        console.log('  ✓ Стеклянные карточки');
-        console.log('  ✓ Стикеры');
-        console.log('  ✓ Аудиоволна');
-        console.log('  ✓ Декоративные линии');
-        console.log('  ✓ Кастомный курсор');
-        console.log('  ✓ Перелистывание секций');
-        console.log('  ✓ Интерактивная карта');
-        console.log('  ✓ Живые счётчики');
-        console.log('  ✓ Аудиоплеер');
-        console.log('  ✓ Перетаскиваемые стикеры');
-        console.log('  ✓ Блик от мыши');
-        console.log('  ✓ Режим ночного города');
-    </script>
-
+  <script>
+    // Генерируем звёзды
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 50; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      const size = Math.random() * 2 + 1;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.animationDelay = Math.random() * 5 + 's';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      star.style.opacity = Math.random() * 0.5 + 0.2;
+      starsContainer.appendChild(star);
+    }
+  </script>
 </body>
 </html>
